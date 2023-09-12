@@ -79,3 +79,282 @@ The synthetic event is essentially a wrapper around the browser’s native event
 
 [Event reference]
 (https://developer.mozilla.org/en-US/docs/Web/Events)
+
+## React Props and State
+
+### Props
+
+Props are short for properties and they are used to pass data between React components. React’s data flow between components is uni-directional (from parent to child only).
+
+Props and state are related. The state of one component will often become the props of a child component. Props are passed to the child within the render method of the parent as the second argument to `React.createElement()` or, if you’re using JSX, the more familiar tag attributes. These attributes become the `props` object on the child component instance. The `render` method returns a description of what you want to see on the screen. React takes the description and displays the result. In particular, `render` returns a **React element**, which is a lightweight description of what to render. Most React developers use a special syntax called “JSX” which makes these structures easier to write. The `<div />` syntax is transformed at build time to `React.createElement('div')`. The example above is equivalent to:
+
+```javascript
+React.createElement("div", null, "Hello World!");
+```
+
+JSX is an optional preprocessor to let you use XML in your JavaScript. We recommend using it with React to describe what the UI should look like. JSX may remind you of a template language, but it comes with the full power of JavaScript. JSX produces React “elements”. We will explore rendering them to the DOM in the next section. Below, you can find the basics of JSX necessary to get you started.
+
+### State
+
+React Props are used to pass information down the component tree; React state is used to make applications interactive. We’ll be able to change the application’s appearance by interacting with it.
+
+### useState Hook
+
+The useState hook is a special function that takes the initial state as an argument and returns an array of two entries. The first entry is the current state and the second entry is a function that can update this state. The useState hook is a named export from the React package.
+
+```javascript
+import React, { useState } from "react";
+
+const App = () => {
+  const stories = [ ... ];
+
+  const [searchTerm, setSearchTerm] = React.useState('');
+
+  ...
+};
+
+
+```
+
+#### Destructuring Arrays in JavaScript, useState Hook
+
+```javascript
+const [searchTerm, setSearchTerm] = React.useState("");
+```
+
+```javascript
+const App = () => {
+  const stories = [ ... ];
+
+  // less readable version without array destructuring
+  const searchTermState = React.useState('');
+  const searchTerm = searchTermState[0];
+  const setSearchTerm = searchTermState[1];
+
+  ...
+};
+```
+
+is the same as this:
+
+```javascript
+const App = () => {
+  const stories = [ ... ];
+
+
+  const [searchTerm, setSearchTerm] = React.useState('');
+
+  ...
+};
+```
+
+This code will cause the searchTerm in the state to be updated to the value of the input field whenever the user types something into the input field.
+
+```javascript
+const App = () => {
+  // variables and functions are defined here
+
+  // SearchTerm is a state variable, and setSearchTerm is a function that can update this state variable
+  const [searchTerm, setSearchTerm] = React.useState("");
+
+  const handleChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  return (
+    <div>
+      <h1>My Hacker Stories </h1>
+      <label htmlFor="search">Search: </label>
+      <input id="search" type="text" onChange={handleChange} />
+
+      <p>
+        Searching for <strong>{searchTerm}</strong>.
+      </p>
+
+      <hr />
+
+      <List list={booklist} />
+    </div>
+  );
+};
+```
+
+## Callback Handlers in JSX
+
+```javascript
+import React from "react";
+import List from "./components/List";
+import Search from "./components/Search";
+import booklist from "./data/list";
+
+const App = () => {
+  // variables and functions are defined here
+
+  const handleChange = (event) => {
+    console.log(event.target.value);
+  };
+
+  return (
+    <div>
+      <h1>My Hacker Stories </h1>
+      <Search onSearch={handleChange} />
+
+      <hr />
+
+      <List list={booklist} />
+    </div>
+  );
+};
+
+export default App;
+```
+
+In the given App component, the function definition of `handleChange` is being passed to the `Search` component as a prop named `onSearch`. It is not executing the function at that moment; rather, it's passing a reference to the function so that it can be called later within the `Search` component, usually as part of an event handler.
+
+Here's the relevant line:
+
+```jsx
+<Search onSearch={handleChange} />
+```
+
+The `handleChange` function will only get executed when the corresponding event (probably an input change event, based on the name and typical use cases) occurs within the `Search` component, and that event calls `onSearch`.
+
+Inside the `Search` component, you would typically use this prop in an event handler, something like this:
+
+```jsx
+<input type="text" onChange={props.onSearch} />
+```
+
+When someone types in the input field of the `Search` component, the `handleChange` function in the `App` component will be called, logging the input value to the console.
+
+Here is the search component, note that the handleChange function is being called in the onChange event handler, and that the handleChange function is independent between the App component and the Search component.
+
+```javascript
+import React from "react";
+
+const Search = (props) => {
+  const [searchTerm, setSearchTerm] = React.useState("");
+
+  const handleChange = (event) => {
+    setSearchTerm(event.target.value);
+
+    props.onSearch(event);
+  };
+
+  return (
+    <div>
+      <label htmlFor="search">Search: </label>
+      <input id="search" type="text" onChange={handleChange} />
+
+      <p>
+        Searching for <strong>{searchTerm}</strong>.
+      </p>
+    </div>
+  );
+};
+
+export default Search;
+```
+
+In this `Search` component, a couple of things are happening:
+
+1. It maintains its own local state, `searchTerm`, which it updates using its own local `handleChange` function. This state is used to display the current search term in the component's rendered output.
+2. It also calls `props.onSearch(event)` within its local `handleChange` function. This invokes the function that was passed in from the parent component as a prop, enabling the parent component to also respond to the input changes.
+
+Here's a breakdown of the steps:
+
+### Step 1: Initialize State
+
+The `searchTerm` state is initialized to an empty string.
+
+```jsx
+const [searchTerm, setSearchTerm] = React.useState("");
+```
+
+### Step 2: Define `handleChange`
+
+The `handleChange` function does two main things:
+
+1. It updates the `searchTerm` state with the value of the input field.
+2. It calls `props.onSearch(event)`, which is the function passed down from the parent component (most likely for the parent component to also keep track of the changes in some way).
+
+```jsx
+const handleChange = (event) => {
+  setSearchTerm(event.target.value);
+  props.onSearch(event);
+};
+```
+
+### Step 3: Render
+
+The component renders an input field. When you type in this input field, the `onChange` event triggers `handleChange`.
+
+```jsx
+<input id="search" type="text" onChange={handleChange} />
+```
+
+Additionally, the current value of `searchTerm` is displayed in the paragraph element:
+
+```jsx
+<p>
+  Searching for <strong>{searchTerm}</strong>.
+</p>
+```
+
+### Step 4: Call Parent's Function
+
+`props.onSearch(event)` is used in the parent component to also update its own state or to perform some action based on the search term, although this will depend on what that function actually does in the parent component. You've passed it from the parent component as `onSearch={handleChange}`, where `handleChange` is a function defined in the parent component.
+
+To summarize, the `Search` component is doing dual-duty. It's managing its own internal state for UI display purposes and also communicating changes back up to its parent component via `props.onSearch(event)`.
+
+There is no way to pass information as JavaScript data types up the component tree, since props are naturally only passed downwards. However, we can introduce a callback handler as a function:
+
+## Lifting State
+
+Now we lift the state up to the app component and use it in the Search component as a prop.
+
+```javascript
+const App = () => {
+  // variables and functions are defined here
+
+  const [searchTerm, setSearchTerm] = React.useState("");
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  return (
+    <div>
+      <h1>My Hacker Stories </h1>
+      <Search onSearch={handleSearch} />
+
+      <hr />
+
+      <List list={booklist} />
+    </div>
+  );
+};
+```
+
+And the Search component receives the searchTerm as a prop and uses it to display the current search term in the input field.
+
+```javascript
+import React from "react";
+
+const Search = (props) => {
+  return (
+    <div>
+      <label htmlFor="search">Search: </label>
+      <input id="search" type="text" onChange={props.handleSearch} />
+
+      <p>
+        Searching for <strong>{props.handleSearch}</strong>.
+      </p>
+    </div>
+  );
+};
+
+export default Search;
+``` 
+
+Always manage the state at a component where every component that’s interested in it is one that either manages the state (using information directly from state) or a component below the managing component (using information from props). If a component below needs to update the state, pass a callback handler down to it (see Search component). If a component needs to use the state (e.g. displaying it), pass it down as props.

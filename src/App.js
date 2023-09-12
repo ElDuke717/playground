@@ -1,23 +1,30 @@
 import React from "react";
 import List from "./components/List";
+import Search from "./components/Search";
 import booklist from "./data/list";
 
 const App = () => {
   // variables and functions are defined here
 
-  const handleChange = (event) => {
-    console.log(event.target.value);
+  const [searchTerm, setSearchTerm] = React.useState("");
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
   };
+
+  // adjusts the list of stories based on the search term using the filter() and includes() methods
+  const searchedStories = booklist.filter((story) =>
+    story.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div>
       <h1>My Hacker Stories </h1>
-      <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={handleChange}/>
+      <Search onSearch={handleSearch} currentSearchTerm ={searchTerm}/>
 
       <hr />
 
-      <List list={booklist}  />
+      <List list={searchedStories} />
     </div>
   );
 };
