@@ -5,9 +5,9 @@ import booklist from "./data/list";
 
 const App = () => {
   // variables and functions are defined here
-
+  // For the useEffect() hook, the function is called after the first render and every time the component updates
   const [searchTerm, setSearchTerm] = React.useState("");
-
+  // handleSearch function is passed to the Search component as a prop, it is called when the input field changes
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -20,7 +20,8 @@ const App = () => {
   return (
     <div>
       <h1>My Hacker Stories </h1>
-      <Search onSearch={handleSearch} currentSearchTerm ={searchTerm}/>
+      {/* The current searchTerm is set to searchTerm, which is a variable passed into and changed by the useState hook */}
+      <Search onSearch={handleSearch} search={searchTerm} />
 
       <hr />
 
