@@ -376,10 +376,10 @@ In React, a "Controlled Component" is one where the form data is handled by the 
 Here's a simple example of a controlled component, a text input field:
 
 ```jsx
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function ControlledForm() {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
 
   const handleChange = (event) => {
     setInputValue(event.target.value);
@@ -407,3 +407,72 @@ In this example, `inputValue` is part of the component's state and represents th
 3. **State as Value**: The `value` attribute of the `<input>` element is set to the current state, making it a controlled component.
 
 Since you're keen on grasping programming concepts and have been working with JavaScript, understanding controlled components would be a great asset, especially for building robust and dynamic user interfaces.
+
+## React Side - Effects
+
+```javascript
+const App = () => {
+ ...
+
+ const [searchTerm, setSearchTerm] = React.useState(
+
+   localStorage.getItem('search') || 'React'
+
+ );
+
+ const handleSearch = event => {
+   setSearchTerm(event.target.value);
+
+   localStorage.setItem('search', event.target.value);
+
+ };
+
+ ...
+);
+~~
+
+```
+
+Above we're sing the localStorage API to store the searchTerm in the browser’s localStorage. The localStorage API is a key-value store that allows you to store data in the browser. The localStorage API is synchronous, which means that it blocks the main thread. This is not a problem in this case, but it can be a problem if you store a lot of data in the localStorage.
+
+This way works, but it can create problems since the handler function should only be concerned with updating the state. The handler function should not be concerned with storing the searchTerm in the localStorage. This is a side-effect of the handler function.
+
+The handler function should mostly be concerned about updating the state, but now it has a side-effect. If we use the setSearchTerm function elsewhere in our application, we will break the feature we implemented because we can’t be sure the local storage will also get updated.
+
+So instead, we use the useEffect hook to handle it and other side-effects.
+
+```javascript
+useEffect(() => {
+  // add localStorage.setItem method to store the search term
+  localStorage.setItem("search", searchTerm);
+}, [searchTerm]);
+```
+
+Certainly, Nick! The `useEffect` hook in this example is used to perform a side effect, which in this case is updating the local storage whenever the `searchTerm` changes.
+
+Here's the breakdown:
+
+1. **`useEffect(() => { ... }, [searchTerm]);`**: `useEffect` is a hook in React that allows you to run side effects in function components. It takes two arguments: a function containing the code to run and an array of dependencies.
+
+2. **`localStorage.setItem("search", searchTerm);`**: Inside the `useEffect`, you are using the `localStorage.setItem` method. This method allows you to store key-value pairs in a web browser's local storage. Here, you are storing the current value of `searchTerm` under the key "search".
+
+3. **`[searchTerm]`**: This is the dependency array. It tells React that the `useEffect` should run again only when `searchTerm` changes. If `searchTerm` is updated in your component, the `useEffect` will run, and the new `searchTerm` value will overwrite the previous one in local storage.
+
+So, every time `searchTerm` changes, this `useEffect` will execute, and it will update the "search" key in the local storage with the new `searchTerm` value. It's a way of "remembering" the search term even if the user leaves the page or reloads it.
+
+Is that explanation clear for you?
+
+React’s useEffect Hook takes two arguments: The first argument is a function where the side-effect occurs. In our case, the side-effect is when the user types the searchTerm into the browser’s local storage. The second argument is a dependency array of variables. If one variable changes, the function for the side-effect is called. In our case, the function is called every time the searchTerm changes; it’s called initially when the component renders for the first time.
+
+If the dependency array of React’s useEffect is an empty array, the function for the side-effect is only called once, after the component renders for the first time. The hook lets us opt into React’s component lifecycle. It can be triggered when the component is first mounted, but also one of its dependencies are updated.
+
+Using React useEffect instead of managing the side-effect in the handler has made the application more robust. Whenever and wherever searchTerm is updated via setSearchTerm, local storage will always be in sync with it.
+
+## React Custom Hooks
+
+Thus far we’ve covered the two most popular hooks in React: useState and useEffect. useState is used to make your application interactive; useEffect is used to opt into the lifecycle of your components.
+
+Here we will use `useSemiPersistentState` as a custom hook to manage the searchTerm state.
+
+```javascript
+

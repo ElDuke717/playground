@@ -1,21 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import List from "./components/List";
 import Search from "./components/Search";
 import booklist from "./data/list";
+import "./App.css";
+
+// this is a custom hook that is generalized to set data into local storage, like searchterms
+const useSemiPersistentState = () => {
+  const [value, setValue] = useState(localStorage.getItem("value") || "");
+
+  useEffect(() => {
+    localStorage.setItem("value", value);
+  }, [value]);
+
+  return [value, setValue];
+};
 
 const App = () => {
-  // variables and functions are defined here
-  // For the useEffect() hook, the function is called after the first render and every time the component updates
-  const [searchTerm, setSearchTerm] = React.useState("");
-  // handleSearch function is passed to the Search component as a prop, it is called when the input field changes
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
-
+  
   // adjusts the list of stories based on the search term using the filter() and includes() methods
-  const searchedStories = booklist.filter((story) =>
-    story.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const searchedStories = booklist.filter((story) => {
+    return (
+      story.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      story.author.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   return (
     <div>
