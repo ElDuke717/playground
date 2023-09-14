@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import List from "./components/List";
-import Search from "./components/Search";
+import InputWithLabel from "./components/InputWithLabel";
 import booklist from "./data/list";
 import "./App.css";
 
@@ -16,11 +16,12 @@ const useSemiPersistentState = () => {
 };
 
 const App = () => {
+  // now useSemiPersistentState is used to update the state, based on previously saved state in local storage
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
-  
+
   // adjusts the list of stories based on the search term using the filter() and includes() methods
   const searchedStories = booklist.filter((story) => {
     return (
@@ -32,8 +33,17 @@ const App = () => {
   return (
     <div>
       <h1>My Hacker Stories </h1>
+
       {/* The current searchTerm is set to searchTerm, which is a variable passed into and changed by the useState hook */}
-      <Search onSearch={handleSearch} search={searchTerm} />
+
+      <InputWithLabel
+        id="search"
+        onInputChange={handleSearch}
+        value={searchTerm}>
+        {/* This can be passed in instead of "label" and it  */}
+        <strong>Search</strong>
+        </InputWithLabel>
+      
 
       <hr />
 

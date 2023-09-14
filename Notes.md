@@ -475,4 +475,155 @@ Thus far we’ve covered the two most popular hooks in React: useState and useEf
 Here we will use `useSemiPersistentState` as a custom hook to manage the searchTerm state.
 
 ```javascript
+// this is a custom hook that is generalized to set data into local storage, like searchterms
+const useSemiPersistentState = () => {
+  const [value, setValue] = useState(localStorage.getItem("value") || "");
 
+  useEffect(() => {
+    localStorage.setItem("value", value);
+  }, [value]);
+
+  return [value, setValue];
+};
+
+const App = () => {
+  // now useSemiPersistentState is used to update the state, based on previously saved state in local storage
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  // adjusts the list of stories based on the search term using the filter() and includes() methods
+  const searchedStories = booklist.filter((story) => {
+    return (
+      story.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      story.author.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+```
+
+### Explanation
+
+Sure, let's dissect the code you've provided:
+
+### Custom Hook: useSemiPersistentState
+
+This is a custom React hook aimed at providing a semi-persistent state—state that will persist even if the page is refreshed or closed and re-opened, thanks to `localStorage`.
+
+1. **useState Hook**:
+   `const [value, setValue] = useState(localStorage.getItem("value") || "");`
+
+   - This initializes `value` based on what is stored in `localStorage` under the key "value". If nothing is found, it defaults to an empty string.
+
+2. **useEffect Hook**:
+   `useEffect(() => { localStorage.setItem("value", value); }, [value]);`
+
+   - Any time `value` changes, this `useEffect` updates the "value" stored in `localStorage`.
+
+3. **Return Statement**:
+   `return [value, setValue];`
+   - The custom hook returns the `value` and `setValue`, so you can both get and set the `value` in your component. This pattern is similar to the one used by React's `useState`.
+
+### App Component
+
+1. **Using the Custom Hook**:
+   `const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");`
+
+   - This line is actually a bit misleading because based on the current definition of `useSemiPersistentState`, it doesn't use the parameters ("search", "React"). It will only use the hard-coded "value" key and an empty string as defaults. You might want to adjust the custom hook to be more generic.
+
+2. **Handle Search**:
+   `const handleSearch = (event) => { setSearchTerm(event.target.value); };`
+
+   - This function updates `searchTerm` when the user types in an input field.
+
+3. **Filtering the Stories**:
+   - The `searchedStories` variable is used to filter the stories whose title or author includes the `searchTerm`.
+
+### Observations:
+
+1. **Parameter Issue in Custom Hook**: The custom hook in its current form doesn't utilize the parameters ("search", "React") passed to it. It should be more generic if you intend to pass those.
+
+2. **Redundancy**: The purpose of the custom hook is to manage state that should be semi-persistent (stored in `localStorage`). The `App` component then uses this custom hook, so there's no need for additional state management unless there are other specific needs.
+
+Would you like some code to refactor the custom hook to make it more generic? This way, you could truly make use of the parameters ("search", "React") passed to it.
+
+## React Fragments
+
+Wrapping elements are necessary in JSX. However, sometimes you don’t want to add an extra node to the DOM. This is where React Fragments come into play.
+
+```javascript
+return (
+  <>
+    <label htmlFor="search">Search: </label>
+    <input
+      id="search"
+      type="text"
+      // The value is set to the current search term, which is a variable passed into and changed by the useState hook
+      value={search}
+      // The onChange event handler is set to the handleSearch function, which is a variable passed into the Search component as a prop.  onChange is called when the input field changes - built into React
+      onChange={onSearch}
+    />
+
+    <p>
+      Searching for <strong>"{search}"</strong>
+    </p>
+  </>
+);
+```
+
+The `<>` and `</>` are React Fragments. They are used to wrap multiple elements without adding an extra node to the DOM.
+
+## React Reusable components
+
+Now the search component has been refactored into a more reusable component.
+
+```javascript
+// Fromt App.js - the attributes of the Search component are now passed in as props
+return (
+    <div>
+      <h1>My Hacker Stories </h1>
+
+      {/* The current searchTerm is set to searchTerm, which is a variable passed into and changed by the useState hook */}
+
+      <InputWithLabel
+        id="search"
+        onInputChange={handleSearch}
+        value={searchTerm}>
+        {/* This can be passed in instead of "label" and it  */}
+        Search
+        </InputWithLabel>
+
+
+      <hr />
+
+      <List list={searchedStories} />
+    </div>
+  );
+};
+
+// The label is passed via the children prop
+
+const InputWithLabel = ({ id, children, value, onInputChange }) => {
+  return (
+    <>
+      <label htmlFor={id}>{children}</label>
+      <input
+        id={id}
+        type="text"
+        // The value is set to the current search term, which is a variable passed into and changed by the useState hook
+        value={value}
+        // The onChange event handler is set to the handleSearch function, which is a variable passed into the Search component as a prop.  onChange is called when the input field changes - built into React
+        onChange={onInputChange}
+      />
+
+      <p>
+        Searching for <strong>"{value}"</strong>
+      </p>
+    </>
+  );
+};
+
+```
+
+Components can be composed into one another using the children prop.
