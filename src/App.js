@@ -4,6 +4,8 @@ import InputWithLabel from "./components/InputWithLabel";
 import booklist from "./data/list";
 import "./App.css";
 
+const initialStories = booklist;
+
 // this is a custom hook that is generalized to set data into local storage, like searchterms
 const useSemiPersistentState = () => {
   const [value, setValue] = useState(localStorage.getItem("value") || "");
@@ -20,6 +22,17 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  // state handler for the stories.  Initial stories comes from the booklist
+  const [stories, setStories] = useState(initialStories);
+
+  const handleRemoveStory = (item) => {
+    const newStories = stories.filter(
+      (story) => item.objectID !== story.objectID
+    );
+
+    setStories(newStories);
   };
 
   // adjusts the list of stories based on the search term using the filter() and includes() methods
@@ -39,15 +52,16 @@ const App = () => {
       <InputWithLabel
         id="search"
         onInputChange={handleSearch}
-        value={searchTerm}>
+        value={searchTerm}
+        isFocused
+      >
         {/* This can be passed in instead of "label" and it  */}
         <strong>Search</strong>
-        </InputWithLabel>
-      
+      </InputWithLabel>
 
       <hr />
 
-      <List list={searchedStories} />
+      <List list={searchedStories} onRemoveItem={handleRemoveStory} />
     </div>
   );
 };

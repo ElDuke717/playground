@@ -627,3 +627,161 @@ const InputWithLabel = ({ id, children, value, onInputChange }) => {
 ```
 
 Components can be composed into one another using the children prop.
+
+## Imperative React
+
+```javascript
+const InputWithLabel = ({ ... }) => (
+  <>
+    <label htmlFor={id}>{children}</label>
+    &nbsp;
+    <input
+      id={id}
+      type={type}
+      value={value}
+
+      autoFocus
+      onChange={onInputChange}
+    />
+  </>
+);
+```
+
+The autoFocus attribute in the <input> element specifies that the input field should automatically get focus when the page loads, or more accurately, when the component is mounted in the React context. This means that as soon as this component appears on the screen, the input field will be focused and the user can start typing right away without having to click the input field first.
+
+This can be useful for improving user experience, especially for forms or fields where user input is immediately required. For example, a search bar on a homepage might use autoFocus to allow users to start typing their query as soon as the page loads.
+
+In your component, the autoFocus attribute is hard-coded, meaning that this input will always try to take focus when the component is mounted. This could potentially lead to issues if you have multiple instances of InputWithLabel in your application because each one would try to autofocus.
+
+Instead, we can use refs to refer to the component that we want the focus to land on:
+
+```javascript
+const InputWithLabel = ({
+  id,
+  value,
+  type = "text",
+  onInputChange,
+  isFocused,
+  children,
+}) => {
+  // A
+  const inputRef = React.useRef();
+
+  // C
+  React.useEffect(() => {
+    if (isFocused && inputRef.current) {
+      // D
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+
+  return (
+    <>
+      <label htmlFor={id}>{children}</label>
+      &nbsp;
+      {/* B */}
+      <input
+        ref={inputRef}
+        id={id}
+        type={type}
+        value={value}
+        onChange={onInputChange}
+      />
+    </>
+  );
+};
+```
+
+Here we use the `isFocused` prop to pass to the component.
+
+```javascript
+const InputWithLabel = ({ id, children, value, onInputChange, isFocused }) => {
+  // React.useRef
+  const inputRef = React.useRef();
+
+  React.useEffect(() => {
+    if (isFocused) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+  return (
+    <>
+      <label htmlFor={id}>{children}</label>
+      &nbsp;
+      <input
+        ref={inputRef}
+        id={id}
+        type="text"
+        // The value is set to the current search term, which is a variable passed into and changed by the useState hook
+        value={value}
+        // The onChange event handler is set to the handleSearch function, which is a variable passed into the Search component as a prop.  onChange is called when the input field changes - built into React
+        onChange={onInputChange}
+      />
+      <p>
+        Searching for <strong>"{value}"</strong>
+      </p>
+    </>
+  );
+};
+
+export default InputWithLabel;
+```
+
+It is used to determine what inputWithLabel compoent should be in focus when the DOM is loaded, since
+`inputWithLabel` is now a generalized, reusable component.
+
+![Alt text](image.png)
+
+In React, `useRef` is a hook that returns a mutable ref object whose `.current` property can be initialized to a passed argument (`useRef(initialValue)`). The returned object will persist for the full lifetime of the component, meaning it won't get re-created with every re-render.
+
+In the context of your `InputWithLabel` component, `const inputRef = React.useRef();` is creating a ref object that you can attach to your input field. This essentially gives you a way to directly interact with the underlying DOM element in an "imperative" way.
+
+Here's what each part does:
+
+- `const inputRef = React.useRef();` creates a new ref object and stores it in the variable `inputRef`.
+- `ref={inputRef}` attaches the ref object to the `input` element. Once it's attached, `inputRef.current` will point to the corresponding DOM node, allowing you to call DOM methods on it.
+- `React.useEffect(() => {...}, [isFocused]);` runs a side effect after render. In this case, the side effect is focusing on the input field.
+
+- `inputRef.current.focus();` is a method call to the underlying DOM node to programmatically set the focus to this input field.
+
+The reason you might want to do this is to automate focus behavior. In your component, `isFocused` determines whether the input field should gain focus automatically when the component mounts or updates. This can be particularly useful in user interfaces where you want to guide the user's attention to a specific input field immediately when a page or component loads.
+
+### Here we use the .bind method to bind arguments directly to a function that should be used when executing it.
+
+```javascript
+const Item = ({ item, onRemoveItem }) => {
+  const handleRemoveItem = () => {
+    onRemoveItem(item);
+  };
+  return (
+    <div>
+      <span>
+        <a href={item.url}>{item.title}</a>
+      </span>{" "}
+      <p> Author: {item.author}</p>
+      <p>Comments: {item.num_comments}</p>
+      <p>Points: {item.points}</p>
+      <span>
+        <button type="button" onClick={onRemoveItem.bind(null, item)}>
+          Dismiss
+        </button>
+      </span>
+    </div>
+  );
+};
+```
+
+The `.bind()` method creates a new function that, when called, has its `this` keyword set to the provided value, with a given sequence of arguments preceding any provided when the new function is called. In the case of React components, the `this` context isn't usually relevant when dealing with functional components, but `.bind()` can still be useful for partially applying function arguments.
+
+In your example, `onRemoveItem.bind(null, item)` creates a new function where the first argument is automatically set to `item`. When the button is clicked and the `onClick` handler is invoked, it'll execute `onRemoveItem(item)`.
+
+Here's a breakdown:
+
+- `null`: This is setting the `this` context. It's set to `null` because in this case, the `this` context is not relevant (we're in a functional component).
+- `item`: This is the argument we want to "pre-fill" for the `onRemoveItem` function.
+
+So, when the button is clicked, `onClick` will execute `onRemoveItem` with `item` as its first argument. It's essentially a shorthand way to accomplish what you're doing with `handleRemoveItem`.
+
+To summarize, `.bind(null, item)` here serves as a way to preset `item` as the argument for the `onRemoveItem` function for each specific button in the list of items. 
+
+If you're comfortable with arrow functions, the arrow function `() => onRemoveItem(item)` is often easier to read and does the same thing as `.bind(null, item)` in this context.
