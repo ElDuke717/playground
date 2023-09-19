@@ -886,6 +886,116 @@ useEffect(() => {
 
 Handling asynchronous data means that when our app first loads, there is no data to populate the list of stories. We can use conditional rendering to handle this.
 
-```javascript
+We add the useState methods `setIsLoading` and `setIsError` to manage the state of the loading and error messages.
 
+```javascript
+const [isLoading, setIsLoading] = useState(false);
+const [isError, setIsError] = useState(false);
+
+// This useEffect calls getAsychStories above (simulated delay for an API call)
+useEffect(() => {
+  setIsLoading(true);
+  getAsyncStories()
+    .then((result) => {
+      setStories(result.data.stories);
+
+      setIsLoading(false);
+    })
+    .catch(() => setIsError(true));
+}, []);
 ```
+
+We can use the isLoading and isError state variables to conditionally render the loading and error messages.
+
+```javascript
+{
+  /* List component to display filtered stories */
+}
+{
+  isError && <p>Something went wrong ...</p>;
+}
+{
+  isLoading ? (
+    <h2>Loading...</h2>
+  ) : (
+    <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+  );
+}
+```
+
+## React Advanced State
+
+This is very much like using Redux.
+
+The page you're reading is focused on transitioning from using React's `useState` for state management to using the more robust `useReducer`. I'll summarize what's going on and guide you step-by-step on how to update your current app using `useReducer`.
+
+### Summary
+
+- A reducer function takes the current state and an action, and returns a new state.
+- Actions have a type, which helps the reducer decide what to do.
+- `useReducer` replaces `useState`, and it uses a reducer function to manage state transitions.
+- The `dispatch` function from `useReducer` is used to update the state by firing actions.
+- Instead of handling the removal of a story in a separate function, that logic is moved into the reducer for more declarative code.
+- The reducer can be further refined using switch statements for better readability.
+
+### Steps to Update Your App
+
+#### 1. Create a Reducer Function
+
+First, let's create a reducer function to handle your stories. This will go outside your App component.
+
+```javascript
+const storiesReducer = (state, action) => {
+  switch (action.type) {
+    case "SET_STORIES":
+      return action.payload;
+    case "REMOVE_STORY":
+      return state.filter(
+        (story) => story.objectID !== action.payload.objectID
+      );
+    default:
+      throw new Error("Action type not handled");
+  }
+};
+```
+
+Here, I've added two action types: `SET_STORIES` to set the list of stories and `REMOVE_STORY` to remove a single story.
+
+#### 2. Use `useReducer` in App Component
+
+Replace your `useState` for stories with `useReducer`.
+
+```javascript
+const [stories, dispatchStories] = useReducer(storiesReducer, []);
+```
+
+#### 3. Update Your `useEffect`
+
+In your `useEffect` where you load stories, replace `setStories` with `dispatchStories`.
+
+```javascript
+useEffect(() => {
+  getAsyncStories().then((result) => {
+    dispatchStories({ type: "SET_STORIES", payload: result.data.stories });
+  });
+}, []);
+```
+
+#### 4. Update Your `handleRemoveStory` Function
+
+Update the `handleRemoveStory` function to use `dispatchStories`.
+
+```javascript
+const handleRemoveStory = (item) => {
+  dispatchStories({ type: "REMOVE_STORY", payload: item });
+};
+```
+
+#### 5. Verify App Behavior
+
+Your application should behave the same way as before, but now it's using `useReducer` for state management.
+
+Here, the `useReducer` setup provides a more structured and scalable way to manage your state, especially as your app grows and the logic becomes more complex.
+
+More information on reducers can be found here: https://reactjs.org/docs/hooks-reference.html#usereducer
+https://www.robinwieruch.de/javascript-reducer/

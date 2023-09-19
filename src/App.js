@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import List from "./components/List";
 import InputWithLabel from "./components/InputWithLabel";
 import booklist from "./data/list";
@@ -7,7 +7,19 @@ import "./App.css";
 // Initial data for the stories
 const initialStories = booklist;
 
-// Asynchronous function that returns a promise - data, once it resolves
+// Reducer function for story state management
+const storiesReducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_STORIES':
+      return action.payload;
+    case 'REMOVE_STORY':
+      return state.filter(story => story.objectID !== action.payload.objectID);
+    default:
+      throw new Error('Action type not handled');
+  }
+};
+
+// Simulated async function to mimic fetching data from an API
 const getAsyncStories = () =>
   new Promise(resolve =>
     setTimeout(
@@ -16,14 +28,12 @@ const getAsyncStories = () =>
     )
   );
 
-// Custom hook to handle semi-persistent state using local storage
+// Custom hook to manage semi-persistent state via local storage
 const useSemiPersistentState = (key, initialState) => {
-  // Initialize the state from local storage or with an initial value
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
   );
 
-  // Update local storage whenever the value changes
   useEffect(() => {
     localStorage.setItem(key, value);
   }, [value, key]);
@@ -32,41 +42,37 @@ const useSemiPersistentState = (key, initialState) => {
 };
 
 const App = () => {
-  // Use the custom hook to manage the search term with semi-persistence
+  // Use custom hook for managing search term with local storage
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
-// State to manage the list of stories
-  const [stories, setStories] = useState([]);
 
+  // State and reducer for managing stories
+  const [stories, dispatchStories] = useReducer(storiesReducer, []);
+
+  // States for handling loading and error scenarios
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false)
+  const [isError, setIsError] = useState(false);
 
-  // This useEffect calls getAsychStories above (simulated delay for an API call)
+  // Fetch stories data
   useEffect(() => {
     setIsLoading(true);
     getAsyncStories().then(result => {
-      setStories(result.data.stories);
-
-      setIsLoading(false);
-
+      dispatchStories({ type: 'SET_STORIES', payload: result.data.stories });
     })
-    .catch(()=> setIsError(true))
-
+    .catch(() => setIsError(true))
+    .finally(() => setIsLoading(false));
   }, []);
 
-  // Handler to remove a story from the list
+  // Function to remove a story
   const handleRemoveStory = (item) => {
-    const newStories = stories.filter(
-      (story) => item.objectID !== story.objectID
-    );
-    setStories(newStories);
+    dispatchStories({ type: 'REMOVE_STORY', payload: item });
   };
 
-  // Handler to update the search term
+  // Function to handle search term changes
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  // Filter stories based on the search term
+  // Filter stories based on search term
   const searchedStories = stories.filter((story) => {
     return (
       story.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -78,7 +84,7 @@ const App = () => {
     <div>
       <h1>My Hacker Stories</h1>
 
-      {/* Search input component */}
+      {/* Search component */}
       <InputWithLabel
         id="search"
         onInputChange={handleSearch}
@@ -90,15 +96,14 @@ const App = () => {
 
       <hr />
 
-      {/* List component to display filtered stories */}
+      {/* Display stories or error/loading messages */}
       {isError && <p>Something went wrong ...</p>}
       {isLoading ? (
         <h2>Loading...</h2>
       ) : (
-      <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+        <List list={searchedStories} onRemoveItem={handleRemoveStory} />
       )}
     </div>
-      
   );
 };
 
