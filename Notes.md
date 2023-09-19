@@ -999,3 +999,62 @@ Here, the `useReducer` setup provides a more structured and scalable way to mana
 
 More information on reducers can be found here: https://reactjs.org/docs/hooks-reference.html#usereducer
 https://www.robinwieruch.de/javascript-reducer/
+
+## Impossible States
+
+The `useReducer` hook is a great way to manage state in your React application. It's especially useful when you have complex state transitions that are difficult to manage with `useState`.
+
+The impossible state happens when an error occurs for the asynchronous data. The state for the error is set, but the state for the loading indicator isn’t revoked.
+
+Ah, "impossible states" in a React application refer to situations where the application's state exists in a combination that shouldn't logically happen. These often arise due to poor state management and can lead to unexpected behavior, bugs, and make the codebase harder to maintain.
+
+### Examples of Impossible States
+
+1. **Loading and Error States at the Same Time:** Imagine you have two boolean states `isLoading` and `hasError`. If both of them are `true` at the same time, that's likely an impossible state since you can't be loading and encounter an error at the same time.
+2. **Data Presence with Error:** Another example could be having a `null` data state but a `false` error state. If there was no error, why is the data `null`?
+
+3. **Inconsistent Form States:** In a multi-step form, you might have a state that tracks the current step and another that tracks if the form is completed. If the step is not the last one, but the form is marked as completed, that's an impossible state.
+
+### How to Resolve Them:
+
+1. **State Machines:** One of the most robust ways to eliminate impossible states is by using state machines or statecharts. Libraries like XState can help manage complex state logic so that impossible states cannot occur.
+
+2. **Use Enums:** Instead of multiple boolean states, use enumerated states. For example, instead of `isLoading` and `hasError`, use a `status` state that could be `'idle'`, `'loading'`, or `'error'`.
+
+   ```javascript
+   const [status, setStatus] = useState("idle"); // 'idle', 'loading', 'error'
+   ```
+
+3. **Co-location of State:** Keep related state variables close to each other, and update them together to ensure they are always in sync.
+
+4. **Derived State:** Sometimes, state can be derived from existing state or props rather than being its own independent state. Use React's `useMemo` or `useEffect` to derive state when applicable.
+
+5. **Unit Testing:** Write unit tests to confirm that the application behaves as expected, and impossible states are not reached.
+
+6. **Strong Typing:** Using TypeScript can help identify impossible states at compile-time.
+
+7. **Custom Hooks:** If a certain pattern of avoiding impossible states is repeating, encapsulate it in a custom hook.
+
+8. **Code Reviews:** Regular code reviews can also help catch scenarios where impossible states could occur.
+
+By planning your state management carefully and applying some of these techniques, you can significantly reduce the likelihood of encountering impossible states, making your app more robust and easier to maintain.
+
+## Impossible States Key Points
+
+Certainly, Nick! The page discusses the concept of "impossible states" in React applications and provides solutions for mitigating such issues.
+
+### Key Points:
+
+1. **Problem with Multiple useState Hooks**: When you use multiple `useState` hooks to manage states that are interrelated, you can end up with inconsistent or impossible states. For instance, you may have one state for error handling and another for loading data. You might find yourself in a situation where both states indicate that data is loading and an error has occurred at the same time, which is logically impossible.
+
+2. **Indicators of Risk**: Be cautious when you see multiple state updater functions being used in sequence, as this is a red flag for potential impossible states.
+
+3. **Example Scenario**: They provide an example where, if an error occurs during asynchronous data fetching, both an error message and a loading indicator may appear simultaneously, which is not ideal behavior.
+
+4. **Solution: Use useReducer**: To combat this issue, the article suggests using `useReducer` for unified state management. By doing so, you can encapsulate related states like `isLoading`, `isError`, and the actual data (`stories`) within a single state object. This makes it easier to manage transitions between these interrelated states.
+
+5. **Benefits of useReducer**: By moving to `useReducer`, you make your state transitions more predictable. It helps to consolidate all related states and actions into one place, minimizing the chances of ending up in an impossible state.
+
+6. **Try and Test**: The article encourages the reader to test out these principles by modifying a data-fetching function to simulate various states and confirm that the issues are resolved.
+
+In summary, the page advocates for the use of `useReducer` when you have states that are tightly interlinked to avoid the pitfalls of impossible states. It moves you towards a more predictable and robust state management strategy.

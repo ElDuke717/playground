@@ -7,32 +7,50 @@ import "./App.css";
 // Initial data for the stories
 const initialStories = booklist;
 
-// Reducer function for story state management
+// Reducer function for story state management - this helps prevent impossible states
 const storiesReducer = (state, action) => {
   switch (action.type) {
-    case 'SET_STORIES':
-      return action.payload;
-    case 'REMOVE_STORY':
-      return state.filter(story => story.objectID !== action.payload.objectID);
+    case "STORIES_FETCH_INIT":
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    case "STORIES_FETCH_SUCCESS":
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        data: action.payload,
+      };
+    case "STORIES_FETCH_FAILURE":
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+      };
+    case "REMOVE_STORY":
+      return {
+        ...state,
+        data: state.data.filter(
+          (story) => action.payload.objectID !== story.objectID
+        ),
+      };
+
     default:
-      throw new Error('Action type not handled');
+      throw new Error();
   }
 };
 
 // Simulated async function to mimic fetching data from an API
 const getAsyncStories = () =>
-  new Promise(resolve =>
-    setTimeout(
-      () => resolve({ data: { stories: initialStories } }),
-      2000
-    )
+  new Promise((resolve) =>
+    setTimeout(() => resolve({ data: { stories: initialStories } }), 2000)
   );
 
 // Custom hook to manage semi-persistent state via local storage
 const useSemiPersistentState = (key, initialState) => {
-  const [value, setValue] = React.useState(
-    localStorage.getItem(key) || initialState
-  );
+  const [value, setValue] = useState(localStorage.getItem(key) || initialState);
 
   useEffect(() => {
     localStorage.setItem(key, value);
@@ -45,26 +63,30 @@ const App = () => {
   // Use custom hook for managing search term with local storage
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
 
-  // State and reducer for managing stories
-  const [stories, dispatchStories] = useReducer(storiesReducer, []);
-
-  // States for handling loading and error scenarios
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  // One useReducer hook to for unified state management to prevent impossible states
+  const [stories, dispatchStories] = useReducer(storiesReducer, {
+    data: [],
+    isLoading: false,
+    isError: false,
+  });
 
   // Fetch stories data
   useEffect(() => {
-    setIsLoading(true);
-    getAsyncStories().then(result => {
-      dispatchStories({ type: 'SET_STORIES', payload: result.data.stories });
-    })
-    .catch(() => setIsError(true))
-    .finally(() => setIsLoading(false));
+    dispatchStories({ type: "STORIES_FETCH_INIT" });
+
+    getAsyncStories()
+      .then((result) => {
+        dispatchStories({
+          type: "STORIES_FETCH_SUCCESS",
+          payload: result.data.stories,
+        });
+      })
+      .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
   }, []);
 
   // Function to remove a story
   const handleRemoveStory = (item) => {
-    dispatchStories({ type: 'REMOVE_STORY', payload: item });
+    dispatchStories({ type: "REMOVE_STORY", payload: item });
   };
 
   // Function to handle search term changes
@@ -73,7 +95,7 @@ const App = () => {
   };
 
   // Filter stories based on search term
-  const searchedStories = stories.filter((story) => {
+  const searchedStories = stories.data.filter((story) => {
     return (
       story.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       story.author.toLowerCase().includes(searchTerm.toLowerCase())
@@ -97,8 +119,8 @@ const App = () => {
       <hr />
 
       {/* Display stories or error/loading messages */}
-      {isError && <p>Something went wrong ...</p>}
-      {isLoading ? (
+      {stories.isError && <p>Something went wrong ...</p>}
+      {stories.isLoading ? (
         <h2>Loading...</h2>
       ) : (
         <List list={searchedStories} onRemoveItem={handleRemoveStory} />
