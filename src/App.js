@@ -7,6 +7,15 @@ import "./App.css";
 // Initial data for the stories
 const initialStories = booklist;
 
+// Asynchronous function that returns a promise - data, once it resolves
+const getAsyncStories = () =>
+  new Promise(resolve =>
+    setTimeout(
+      () => resolve({ data: { stories: initialStories } }),
+      2000
+    )
+  );
+
 // Custom hook to handle semi-persistent state using local storage
 const useSemiPersistentState = (key, initialState) => {
   // Initialize the state from local storage or with an initial value
@@ -28,6 +37,13 @@ const App = () => {
 
   // State to manage the list of stories
   const [stories, setStories] = useState(initialStories);
+
+  // This useEffect calls getAsychStories above (simulated delay for an API call)
+  useEffect(()=> {
+    getAsyncStories().then(result => {
+      setStories(result.data.stories);
+    });
+  }, []);
 
   // Handler to remove a story from the list
   const handleRemoveStory = (item) => {

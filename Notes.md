@@ -782,10 +782,79 @@ Here's a breakdown:
 
 So, when the button is clicked, `onClick` will execute `onRemoveItem` with `item` as its first argument. It's essentially a shorthand way to accomplish what you're doing with `handleRemoveItem`.
 
-To summarize, `.bind(null, item)` here serves as a way to preset `item` as the argument for the `onRemoveItem` function for each specific button in the list of items. 
+To summarize, `.bind(null, item)` here serves as a way to preset `item` as the argument for the `onRemoveItem` function for each specific button in the list of items.
 
 If you're comfortable with arrow functions, the arrow function `() => onRemoveItem(item)` is often easier to read and does the same thing as `.bind(null, item)` in this context.
 
-
 ## Complex JavaScript in JSX
+
+We can use the `map` function in JavaScript to iterate over the list of stories and render a list of items.
+
+```javascript
+{
+  list.map(function (item) {
+    return (
+      <div key={item.objectID}>
+        <span>
+          <a href={item.url}>{item.title}</a>
+        </span>
+        <span>{item.author}</span>
+        <span>{item.num_comments}</span>
+        <span>{item.points}</span>
+      </div>
+    );
+  });
+}
+```
+
+Here's an example of the `App` component in Class format:
+
+```javascript
+import React, { Component } from "react";
+require("./App.css");
+
+const list = [
+  {
+    title: "React",
+    url: "https://reactjs.org/",
+    author: "Jordan Walke",
+    num_comments: 3,
+    points: 4,
+    objectID: 0,
+  },
+  {
+    title: "Redux",
+    url: "https://redux.js.org/",
+    author: "Dan Abramov, Andrew Clark",
+    num_comments: 2,
+    points: 5,
+    objectID: 1,
+  },
+];
+
+class App extends Component {
+  render() {
+    return (
+      <div className="App">
+        {list.map(function (item) {
+          return (
+            <div key={item.objectID}>
+              <span>
+                <a href={item.url}>{item.title}</a>
+              </span>
+              <span>{item.author}</span>
+              <span>{item.num_comments}</span>
+              <span>{item.points}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+## React Asynchronous Data
 
