@@ -1130,3 +1130,23 @@ Now we'll move the data fetching with a default term onto the server side and aw
 ```javascript
 
 ```
+
+## React Memoization
+
+Sure, Nick! This page dives into the concept of "Memoized Handlers" in React, focusing on advanced usage of handlers and callback functions.
+
+### Key Points:
+
+1. **What are Memoized Handlers**: The page introduces the concept of memoized handlers, which are essentially function handlers that are optimized for performance by leveraging React's `useCallback` hook.
+
+2. **Why Use Memoized Handlers**: One of the core reasons for using a memoized handler is to prevent unnecessary re-renders and side-effects, thereby enhancing performance. Memoization avoids the recreation of the function, thus preventing infinite loops and other unwanted behaviors.
+
+3. **How To Implement**: To illustrate, the page walks through a refactor where the data fetching logic is moved to a standalone function and wrapped in a `useCallback` hook. This function is then invoked inside a `useEffect` hook.
+
+4. **The Role of `useCallback`**: The `useCallback` hook memoizes a function until its dependencies change. In the given example, the `useEffect` hook depends on this memoized function. If you didn’t use `useCallback`, a new function would be generated every time the component renders, which could result in an endless loop of data fetching.
+
+5. **Triggering Re-fetch**: The `useCallback` hook only changes the function when specific dependencies change, like a search term in the example. This allows you to re-fetch data only when it is necessary, such as when the user inputs a new search term.
+
+6. **Reusable Function**: By encapsulating the data fetching logic in a memoized function, it becomes reusable across different parts of the application, not just within a single `useEffect`.
+
+In a nutshell, the page explains how to use memoized handlers in React to optimize performance by preventing unnecessary function creations and re-renders. It uses `useCallback` to achieve this, making your React components more efficient and maintainable. This seems like a concept you'd find useful, especially if you're diving deeper into React for your full-stack development goals.

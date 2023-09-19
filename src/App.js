@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useReducer } from "react";
+import React, { useEffect, useState, useReducer, useCallback } from "react";
 import List from "./components/List";
 import InputWithLabel from "./components/InputWithLabel";
-import booklist from "./data/list";
 import "./App.css";
 import storiesReducer from "./reducers/storiesReducer";
 
@@ -33,7 +32,7 @@ const App = () => {
   });
 
   // Fetch stories data from the Hacker News API
-  useEffect(() => {
+  const handleFetchStories = useCallback(() => {
 
     if (!searchTerm) return;
 
@@ -49,6 +48,10 @@ const App = () => {
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
   }, [searchTerm]);
+
+  useEffect(() => {
+    handleFetchStories();
+  }, [handleFetchStories])
 
   // Function to remove a story
   const handleRemoveStory = (item) => {

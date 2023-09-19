@@ -9,9 +9,9 @@ const Item = ({ item, onRemoveItem }) => {
       <span>
         <a href={item.url}>{item.title}</a>
       </span>
-      
+
       {/* Display story author */}
-      <span>{item.author}</span>
+      <span>author: {item.author}</span>
 
       {/* Display the number of comments for the story */}
       <span>Number of comments: {item.num_comments}</span>
