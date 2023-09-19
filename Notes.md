@@ -858,3 +858,34 @@ export default App;
 
 ## React Asynchronous Data
 
+We used this scheme to simulate a slow network connection:
+
+```javascript
+// Asynchronous function that returns a promise - data, once it resolves
+const getAsyncStories = () =>
+  new Promise((resolve) =>
+    setTimeout(() => resolve({ data: { stories: initialStories } }), 2000)
+  );
+```
+
+Removing the `initialStories` variable from the `useState` hook and replacing it with an empty array, we can use the `useEffect` hook to fetch the data from the API.
+
+```javascript
+// State to manage the list of stories
+const [stories, setStories] = useState([]);
+
+// This useEffect calls getAsychStories above (simulated delay for an API call)
+useEffect(() => {
+  getAsyncStories().then((result) => {
+    setStories(result.data.stories);
+  });
+}, []);
+```
+
+## React Conditional Rendering
+
+Handling asynchronous data means that when our app first loads, there is no data to populate the list of stories. We can use conditional rendering to handle this.
+
+```javascript
+
+```

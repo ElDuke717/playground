@@ -34,15 +34,23 @@ const useSemiPersistentState = (key, initialState) => {
 const App = () => {
   // Use the custom hook to manage the search term with semi-persistence
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
+// State to manage the list of stories
+  const [stories, setStories] = useState([]);
 
-  // State to manage the list of stories
-  const [stories, setStories] = useState(initialStories);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false)
 
   // This useEffect calls getAsychStories above (simulated delay for an API call)
-  useEffect(()=> {
+  useEffect(() => {
+    setIsLoading(true);
     getAsyncStories().then(result => {
       setStories(result.data.stories);
-    });
+
+      setIsLoading(false);
+
+    })
+    .catch(()=> setIsError(true))
+
   }, []);
 
   // Handler to remove a story from the list
@@ -83,8 +91,14 @@ const App = () => {
       <hr />
 
       {/* List component to display filtered stories */}
+      {isError && <p>Something went wrong ...</p>}
+      {isLoading ? (
+        <h2>Loading...</h2>
+      ) : (
       <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+      )}
     </div>
+      
   );
 };
 
