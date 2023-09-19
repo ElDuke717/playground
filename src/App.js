@@ -8,13 +8,8 @@ import storiesReducer from "./reducers/storiesReducer";
 // Initial data for the stories
 const initialStories = booklist;
 
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query='; 
 
-
-// Simulated async function to mimic fetching data from an API
-const getAsyncStories = () =>
-  new Promise((resolve) =>
-    setTimeout(() => resolve({ data: { stories: initialStories } }), 2000)
-  );
 
 // Custom hook to manage semi-persistent state via local storage
 const useSemiPersistentState = (key, initialState) => {
@@ -38,15 +33,16 @@ const App = () => {
     isError: false,
   });
 
-  // Fetch stories data
+  // Fetch stories data from the Hacker News API
   useEffect(() => {
     dispatchStories({ type: "STORIES_FETCH_INIT" });
 
-    getAsyncStories()
+    fetch(`${API_ENDPOINT}react`)
+      .then(response => response.json())
       .then((result) => {
         dispatchStories({
           type: "STORIES_FETCH_SUCCESS",
-          payload: result.data.stories,
+          payload: result.hits,
         });
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
