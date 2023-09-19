@@ -5,9 +5,8 @@ import booklist from "./data/list";
 import "./App.css";
 import storiesReducer from "./reducers/storiesReducer";
 
-// Initial data for the stories
-const initialStories = booklist;
 
+// API endpoint where stories are drawn from.
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query='; 
 
 
@@ -35,9 +34,12 @@ const App = () => {
 
   // Fetch stories data from the Hacker News API
   useEffect(() => {
+
+    if (!searchTerm) return;
+
     dispatchStories({ type: "STORIES_FETCH_INIT" });
 
-    fetch(`${API_ENDPOINT}react`)
+    fetch(`${API_ENDPOINT}${searchTerm}`)
       .then(response => response.json())
       .then((result) => {
         dispatchStories({
@@ -46,7 +48,7 @@ const App = () => {
         });
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
-  }, []);
+  }, [searchTerm]);
 
   // Function to remove a story
   const handleRemoveStory = (item) => {
@@ -58,17 +60,11 @@ const App = () => {
     setSearchTerm(event.target.value);
   };
 
-  // Filter stories based on search term
-  const searchedStories = stories.data.filter((story) => {
-    return (
-      story.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      story.author.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  
 
   return (
     <div>
-      <h1>My Hacker Stories</h1>
+      <h1>Hacker News Stories</h1>
 
       {/* Search component */}
       <InputWithLabel
@@ -87,7 +83,7 @@ const App = () => {
       {stories.isLoading ? (
         <h2>Loading...</h2>
       ) : (
-        <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+        <List list={stories.data} onRemoveItem={handleRemoveStory} />
       )}
     </div>
   );

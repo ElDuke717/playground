@@ -1058,3 +1058,75 @@ Certainly, Nick! The page discusses the concept of "impossible states" in React 
 6. **Try and Test**: The article encourages the reader to test out these principles by modifying a data-fetching function to simulate various states and confirm that the issues are resolved.
 
 In summary, the page advocates for the use of `useReducer` when you have states that are tightly interlinked to avoid the pitfalls of impossible states. It moves you towards a more predictable and robust state management strategy.
+
+## Data Fetching
+
+Here's the fetch method that is used to fetch data from the API.
+
+```javascript
+const App = () => {
+  ...
+
+  React.useEffect(() => {
+
+    if (searchTerm === '') return;
+
+
+    dispatchStories({ type: 'STORIES_FETCH_INIT' });
+
+    fetch(`${API_ENDPOINT}${searchTerm}`)
+
+      .then(response => response.json())
+      .then(result => {
+        dispatchStories({
+          type: 'STORIES_FETCH_SUCCESS',
+          payload: result.hits,
+        });
+      })
+      .catch(() =>
+        dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
+      );
+  }, []);
+
+  ...
+};
+```
+
+The `useEffect` hook is updated and used to fetch data from an API.
+
+```javascript
+const App = () => {
+  ...
+
+  React.useEffect(() => {
+
+    if (searchTerm === '') return;
+
+
+    dispatchStories({ type: 'STORIES_FETCH_INIT' });
+
+    fetch(`${API_ENDPOINT}${searchTerm}`)
+
+      .then(response => response.json())
+      .then(result => {
+        dispatchStories({
+          type: 'STORIES_FETCH_SUCCESS',
+          payload: result.hits,
+        });
+      })
+      .catch(() =>
+        dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
+      );
+  }, []);
+
+  ...
+};
+```
+
+## Data Re-Fetching React
+
+Now we'll move the data fetching with a default term onto the server side and away from the client side.
+
+```javascript
+
+```
