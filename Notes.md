@@ -785,3 +785,7 @@ So, when the button is clicked, `onClick` will execute `onRemoveItem` with `item
 To summarize, `.bind(null, item)` here serves as a way to preset `item` as the argument for the `onRemoveItem` function for each specific button in the list of items. 
 
 If you're comfortable with arrow functions, the arrow function `() => onRemoveItem(item)` is often easier to read and does the same thing as `.bind(null, item)` in this context.
+
+
+## Complex JavaScript in JSX
+

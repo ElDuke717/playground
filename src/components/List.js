@@ -1,31 +1,40 @@
 import React from "react";
 
-// destructuring the item prop to make each item - this is passed into the Item component as a prop, Item is then called in the List component
+// Item component renders individual story items
+// Takes in 'item' containing story details and 'onRemoveItem' function as props
 const Item = ({ item, onRemoveItem }) => {
-  const handleRemoveItem = () => {
-    onRemoveItem(item);
-  };
-return  (
-  <div>
-    <span>
-      <a href={item.url}>{item.title}</a>
-    </span>{" "}
-    <p> Author: {item.author}</p>
-    <p>Comments: {item.num_comments}</p>
-    <p>Points: {item.points}</p>
-    <span>
-      <button type="button" onClick={onRemoveItem.bind(null, item)}>
-        Dismiss
-      </button>
-    </span>
-  </div>
-);
-}
+  return (
+    <div>
+      {/* Display story title as a link */}
+      <span>
+        <a href={item.url}>{item.title}</a>
+      </span>
+      
+      {/* Display story author */}
+      <span>{item.author}</span>
 
+      {/* Display the number of comments for the story */}
+      <span>Number of comments: {item.num_comments}</span>
+
+      {/* Display the number of points for the story */}
+      <span>Number of points: {item.points}</span>
+
+      {/* Dismiss button to remove the story from the list */}
+      <span>
+        <button type="button" onClick={() => onRemoveItem(item)}>
+          Dismiss
+        </button>
+      </span>
+    </div>
+  );
+};
+
+// List component to render a list of stories
+// Takes in 'list' of stories and 'onRemoveItem' function as props
 const List = ({ list, onRemoveItem }) => {
-  // map over the list of items and return a new array of items
+  // Map over each story in the 'list' and render it using the 'Item' component
   return list.map((item) => (
-    <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem}/>
+    <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
   ));
 };
 

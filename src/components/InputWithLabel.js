@@ -1,29 +1,38 @@
 import React from "react";
 
-// This used to be a search component, but was refactored into a more general input component so it can be reused.
-
-// The destructured props are passed into the Search component as a prop - note that this is just the same as passing in props and then destructuring them in the function body e.g. const { search, onSearch } = props;
+// InputWithLabel is a reusable input component.
+// Takes destructured props such as 'id', 'children', 'value', 'onInputChange', and 'isFocused'.
 const InputWithLabel = ({ id, children, value, onInputChange, isFocused }) => {
+  
+  // Using useRef to get a reference to the input element
   const inputRef = React.useRef();
 
+  // useEffect to focus on the input field based on the 'isFocused' prop
   React.useEffect(() => {
     if (isFocused) {
+      // Focuses the input field if 'isFocused' is true
       inputRef.current.focus();
     }
   }, [isFocused]);
+
   return (
     <>
+      {/* Label for the input field, children is used to pass the label text */}
       <label htmlFor={id}>{children}</label>
       &nbsp;
+      
+      {/* The input element itself */}
       <input
         ref={inputRef}
         id={id}
         type="text"
-        // The value is set to the current search term, which is a variable passed into and changed by the useState hook
+        // Setting the value prop based on the 'value' passed in
         value={value}
-        // The onChange event handler is set to the handleSearch function, which is a variable passed into the Search component as a prop.  onChange is called when the input field changes - built into React
+        // onChange event calls the 'onInputChange' function passed as a prop
         onChange={onInputChange}
       />
+
+      {/* Displays the current search term */}
       <p>
         Searching for <strong>"{value}"</strong>
       </p>
