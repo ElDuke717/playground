@@ -1527,3 +1527,137 @@ function MyForm() {
 In this example, when the form is submitted, `handleSubmit` is called. Inside that function, `event.preventDefault()` stops the form from being submitted in the traditional sense (i.e., no page reload), allowing you to handle it using JavaScript and React instead.
 
 Hopefully, this sheds light on `preventDefault` and React's Synthetic Event system. Is there anything else you'd like to know?
+
+## Class Components in React
+
+### Summary for Your Notes:
+
+React has evolved significantly since its inception in 2013, particularly in how components are written. One of the major shifts has been from Class components to Function components. Class components were once the standard way to write React applications and offered features like state management and lifecycle methods. Function components, initially known as "functional stateless components," were lightweight but limited; they couldn't handle state or side-effects. However, the introduction of React Hooks in 2018 leveled the playing field, giving Function components the same capabilities as Class components. As a result, the community has gravitated towards Function components for their simplicity and lightweight nature.
+
+---
+
+### Outline: Class Components in React
+
+#### What Are Class Components?
+
+- JavaScript classes that extend from `React.Component`.
+- Must include a mandatory `render()` method to return JSX.
+
+#### How Are They Used?
+
+- Suitable for managing state and side-effects via lifecycle methods.
+- React props can be accessed via the `this` keyword within the class.
+- Example:
+  ```javascript
+  class MyComponent extends React.Component {
+    render() {
+      return <h1>Hello, {this.props.name}</h1>;
+    }
+  }
+  ```
+
+#### Differences from Functional Components:
+
+1. **Syntax**: More verbose; requires `this` keyword to access props and state.
+2. **Lifecycle Methods**: Class components use lifecycle methods (`componentDidMount`, `componentShouldUpdate`, etc.) as opposed to React Hooks (`useState`, `useEffect`).
+3. **State Management**: Class components use `this.setState` to manage state, unlike the `useState` hook in functional components.
+
+#### Key Points:
+
+1. **Legacy Code**: You'll often find Class components in older React applications.
+2. **Interoperability**: Class and Function components can co-exist in the same application.
+3. **Transition**: With the advent of React Hooks, the community is shifting towards using Function components.
+
+By understanding the nuances between Class and Function components, you can work effectively with both modern and legacy React codebases.
+
+Here's a Class component and it's equivalent functional component.
+
+### Class Component With State
+
+Here's an example of a simple counter implemented as a Class component.
+
+```javascript
+import React, { Component } from "react";
+
+// Class Component
+class Counter extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      count: 0,
+    };
+  }
+
+  increment = () => {
+    this.setState({ count: this.state.count + 1 });
+  };
+
+  render() {
+    return (
+      <div>
+        <p>Count: {this.state.count}</p>
+        <button onClick={this.increment}>Increment</button>
+      </div>
+    );
+  }
+}
+
+export default Counter;
+```
+
+**Markup Notes for Class Component:**
+
+- Uses `class` keyword and extends `React.Component`.
+- Requires a `constructor` to initialize state.
+- The `render()` method returns JSX.
+- Requires `this.setState()` to update state.
+- Event handler (`increment`) defined as a class method.
+
+### Functional Component With State
+
+Now let's refactor this Class component into a functional component using React Hooks.
+
+```javascript
+import React, { useState } from "react";
+
+// Functional Component
+const Counter = () => {
+  const [count, setCount] = useState(0);
+
+  const increment = () => {
+    setCount(count + 1);
+  };
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={increment}>Increment</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+**Markup Notes for Functional Component:**
+
+- Uses the `const` keyword to define the component as a function.
+- Utilizes the `useState` hook to manage state.
+- Directly returns JSX without a `render()` method.
+- Calls `setCount` function to update state (no need for `this.setState`).
+- Event handler (`increment`) defined within the function body.
+
+### Key Differences:
+
+1. **Initialization**:
+   - Class uses `constructor`, functional uses `useState`.
+2. **Rendering**:
+   - Class requires `render()`, functional directly returns JSX.
+3. **State Management**:
+   - Class uses `this.setState()`, functional uses a setter from `useState`.
+4. **Event Handlers**:
+   - In Class, it's a method; in functional, it's in the function body.
+5. **Syntax**:
+   - Functional components have less boilerplate and don't require `this`.
+
+By understanding how to transition from Class to functional components, you'll be well-equipped to work with both types effectively.
