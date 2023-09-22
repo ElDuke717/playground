@@ -1320,3 +1320,153 @@ Sure, Nick, here's a summarized version for your notes:
 - Use axios over fetch API for complex requests, compatibility with older browsers, and easier testing.
 
 This should give you a quick overview of why and how to use axios as an alternative to the native fetch API. Would this be helpful for any projects you're currently working on?
+
+## Advanced Async Await
+
+### Async/Await in React (Advanced)
+
+#### What It Covers:
+
+- Alternative syntax for handling promises using async/await.
+
+#### Key Points:
+
+- **Async/Await Syntax**: To use async/await, you prefix your function with the `async` keyword. Then you can use the `await` keyword within the function to handle asynchronous operations.
+- **Synchronous-like Reading**: Once `await` is in use, the code reads almost like synchronous code. Operations after `await` will not execute until the promise resolves.
+- **Error Handling**: To add error handling to an async function, use `try` and `catch` blocks. If something fails in the `try` block, the code will move to the `catch` block for error handling.
+
+#### Comparisons:
+
+- Both `.then()`/`.catch()` and `async`/`await` with `try`/`catch` are valid ways to handle asynchronous operations in JavaScript and React.
+
+## Forms in React
+
+### React Forms and Refactoring
+
+- Enhancing the existing button that fetches data by encapsulating it within an HTML form.
+- Refactoring steps to better structure the form and its functionalities in React.
+
+- **HTML Form in React**: Forms in React's JSX are similar to native HTML forms. Wrap the input field and button within an HTML form element to create structure.
+- **Handling Submissions**: Instead of attaching `handleSearchSubmit` directly to the button, use it in the form element with an `onSubmit` event. The button receives a new `type` attribute set to "submit," delegating the click handling to the form element itself.
+- **Prevent Default Behavior**: Using `preventDefault` in React's synthetic event system stops the native HTML form behavior, which would otherwise cause a browser reload.
+- **Enter Key Support**: With this setup, you can also trigger the search feature by pressing the keyboard's Enter key.
+
+- **Separate SearchForm Component**: The functionality is later separated into its standalone `SearchForm` component, while the `App` component continues to manage the state for the form.
+
+- **State Management**: The state is still managed in the `App` component and used to fetch data that is passed as props to the `List` component.
+
+#### Takeaways:
+
+Forms in React are similar to those in HTML. By using a form element with an `onSubmit` handler and a button with type "submit," you get more structured HTML and better user experience, including the ability to submit the form using the Enter key.
+
+Code was refactored to separate the form into its own component, which is a good practice for better code organization and maintainability.
+
+Here's the updated app component with the `SearchForm` component pulled out and made a separate module for better code organization.
+
+```javascript
+const App = () => {
+  // Use custom hook to manage search term and keep it in local storage
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
+
+  // Initialize URL state for API fetching
+  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
+
+  // Use useReducer to manage the stories' loading state, data, and error state
+  const [stories, dispatchStories] = useReducer(storiesReducer, {
+    data: [],
+    isLoading: false,
+    isError: false,
+  });
+
+  // useCallback ensures handleFetchStories only re-renders when URL changes
+  const handleFetchStories = useCallback(async () => {
+    // Initiate loading state
+    dispatchStories({ type: "STORIES_FETCH_INIT" });
+
+    const result = await axios.get(url);
+    // Perform the fetch and handle the response or error
+    try {
+      dispatchStories({
+        type: "STORIES_FETCH_SUCCESS",
+        payload: result.data.hits,
+      });
+    } catch {
+      dispatchStories({ type: "STORIES_FETCH_FAILURE" });
+    }
+  }, [url]);
+
+  // Fetch stories whenever handleFetchStories changes (which happens when URL changes)
+  useEffect(() => {
+    handleFetchStories();
+  }, [handleFetchStories]);
+
+  // Function to remove a story from the list
+  const handleRemoveStory = (item) => {
+    dispatchStories({ type: "REMOVE_STORY", payload: item });
+  };
+
+  const handleSearchInput = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  // Function to set the URL for fetching based on search term
+  const handleSearchSubmit = (event) => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
+    event.preventDefault();
+  };
+
+  return (
+    <div>
+      <h1>Hacker News Stories</h1>
+
+      <SearchForm
+        searchTerm={searchTerm}
+        onSearchInput={handleSearchInput}
+        onSearchSubmit={handleSearchSubmit}
+      />
+
+      <hr />
+
+      {/* Conditional rendering based on loading/error state */}
+      {stories.isError && <p>Something went wrong ...</p>}
+      {stories.isLoading ? (
+        <h2>Loading...</h2>
+      ) : (
+        <List list={stories.data} onRemoveItem={handleRemoveStory} />
+      )}
+    </div>
+  );
+};
+
+export default App;
+```
+
+Here's the `SearchForm` component that was pulled out of the `App` component.
+
+```javascript
+import React from 'react';
+import InputWithLabel from './InputWithLabel';
+
+const SearchForm = ({
+    searchTerm,
+    onSearchInput,
+    onSearchSubmit,
+  }) => (
+  <form onSubmit={onSearchSubmit}>
+    <InputWithLabel
+      id="search"
+      value={searchTerm}
+      isFocused
+      onInputChange={onSearchInput}
+    >
+      <strong>Search:</strong>
+    </InputWithLabel>
+
+    <button type="submit" disabled={!searchTerm}>
+      Submit
+    </button>
+  </form>
+  );
+
+export default SearchForm;
+```

@@ -3,6 +3,7 @@ import List from "./components/List";
 import InputWithLabel from "./components/InputWithLabel";
 import "./App.css";
 import storiesReducer from "./reducers/storiesReducer";
+import SearchForm from "./components/SearchForm";
 import axios from "axios";
 
 // Define API endpoint constant
@@ -62,34 +63,29 @@ const App = () => {
     dispatchStories({ type: "REMOVE_STORY", payload: item });
   };
 
-  // Function to update the search term in the state
-  const handleSearch = (event) => {
+  const handleSearchInput = event => {
     setSearchTerm(event.target.value);
   };
 
+
   // Function to set the URL for fetching based on search term
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = (event) => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
+    event.preventDefault();
   };
 
+  
   return (
     <div>
       <h1>Hacker News Stories</h1>
+      
+      <SearchForm
+        searchTerm={searchTerm}
+        onSearchInput={handleSearchInput}
+        onSearchSubmit={handleSearchSubmit}
+      />
 
-      {/* Input field for search term */}
-      <InputWithLabel
-        id="search"
-        onInputChange={handleSearch}
-        value={searchTerm}
-        isFocused
-      >
-        <strong>Search</strong>
-      </InputWithLabel>
-
-      {/* Submit button to initiate fetch */}
-      <button type="button" disabled={!searchTerm} onClick={handleSearchSubmit}>
-        Submit
-      </button>
+      <hr />
 
       {/* Conditional rendering based on loading/error state */}
       {stories.isError && <p>Something went wrong ...</p>}
