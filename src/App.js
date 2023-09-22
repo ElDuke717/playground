@@ -3,9 +3,10 @@ import List from "./components/List";
 import InputWithLabel from "./components/InputWithLabel";
 import "./App.css";
 import storiesReducer from "./reducers/storiesReducer";
+import axios from "axios";
 
 // Define API endpoint constant
-const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 
 // Custom hook to manage state that persists in local storage
 const useSemiPersistentState = (key, initialState) => {
@@ -40,12 +41,12 @@ const App = () => {
     dispatchStories({ type: "STORIES_FETCH_INIT" });
 
     // Perform the fetch and handle the response or error
-    fetch(url)
-      .then(response => response.json())
+    axios
+      .get(url)
       .then((result) => {
         dispatchStories({
           type: "STORIES_FETCH_SUCCESS",
-          payload: result.hits,
+          payload: result.data.hits,
         });
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
@@ -86,11 +87,7 @@ const App = () => {
       </InputWithLabel>
 
       {/* Submit button to initiate fetch */}
-      <button
-        type="button"
-        disabled={!searchTerm}
-        onClick={handleSearchSubmit}
-      >
+      <button type="button" disabled={!searchTerm} onClick={handleSearchSubmit}>
         Submit
       </button>
 

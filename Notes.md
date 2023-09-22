@@ -1287,3 +1287,36 @@ Finally, there's a conditionally rendered section to display the stories or poss
 2. Explicit Fetching: The data fetch only happens when the user clicks "Submit", making it an explicit action.
 
 In summary, the code efficiently manages user input and data fetching, all while providing a more user-friendly experience.
+
+## Using third-party libraries in React
+
+[React Libraries for 2023](https://www.robinwieruch.de/react-libraries/)
+
+Axios is a good example of a third party library that can be used in React.
+
+Sure, Nick, here's a summarized version for your notes:
+
+### Using Axios Instead of Fetch API
+
+#### Why Consider Axios:
+
+- Native fetch API isn't supported by all browsers, especially older ones.
+- Fetch API can have issues in headless browser environments used for testing.
+
+#### Advantages of Axios:
+
+- Compatible with older browsers.
+- Automatically transforms the returned response to JSON, wrapping it into a data object.
+- Allows explicit HTTP methods like GET and POST using `axios.get()` and `axios.post()`.
+
+#### Steps to Implement Axios:
+
+1. **Installation**: Run `npm install axios` in the terminal.
+2. **Importation**: Import axios in your App component's file (`src/App.js`).
+3. **Usage**: Replace fetch calls with axios. The syntax is almost identical. Adapt your code to handle axios' data structure.
+
+#### Recommendation:
+
+- Use axios over fetch API for complex requests, compatibility with older browsers, and easier testing.
+
+This should give you a quick overview of why and how to use axios as an alternative to the native fetch API. Would this be helpful for any projects you're currently working on?
