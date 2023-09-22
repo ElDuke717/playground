@@ -1150,3 +1150,140 @@ Sure, Nick! This page dives into the concept of "Memoized Handlers" in React, fo
 6. **Reusable Function**: By encapsulating the data fetching logic in a memoized function, it becomes reusable across different parts of the application, not just within a single `useEffect`.
 
 In a nutshell, the page explains how to use memoized handlers in React to optimize performance by preventing unnecessary function creations and re-renders. It uses `useCallback` to achieve this, making your React components more efficient and maintainable. This seems like a concept you'd find useful, especially if you're diving deeper into React for your full-stack development goals.
+
+## Explicit Data Fetching with React
+
+We don't always want to fetch data when someone types into the input field. This could cause rate limiting resulting in errors.
+
+Here we make separate API calls when the submit button is clicked.
+
+```javascript
+// Custom hook to manage semi-persistent state via local storage
+const useSemiPersistentState = (key, initialState) => {
+  const [value, setValue] = useState(localStorage.getItem(key) || initialState);
+
+  useEffect(() => {
+    localStorage.setItem(key, value);
+  }, [value, key]);
+
+  return [value, setValue];
+};
+
+const App = () => {
+  // Use custom hook for managing search term with local storage
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
+
+  //
+  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
+
+  // One useReducer hook to for unified state management to prevent impossible states
+  const [stories, dispatchStories] = useReducer(storiesReducer, {
+    data: [],
+    isLoading: false,
+    isError: false,
+  });
+
+  // Fetch stories data from the Hacker News API
+  const handleFetchStories = useCallback(() => {
+    // Dispatch action to set loading state
+    dispatchStories({ type: "STORIES_FETCH_INIT" });
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((result) => {
+        dispatchStories({
+          type: "STORIES_FETCH_SUCCESS",
+          payload: result.hits,
+        });
+      })
+      .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
+  }, [url]);
+
+  useEffect(() => {
+    handleFetchStories();
+  }, [handleFetchStories]);
+
+  // Function to remove a story
+  const handleRemoveStory = (item) => {
+    dispatchStories({ type: "REMOVE_STORY", payload: item });
+  };
+
+  // Function to handle search submit
+  const handleSearchInput = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
+  };
+
+  // Function to handle search term changes
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  return (
+    <div>
+      <h1>Hacker News Stories</h1>
+
+      {/* Search component */}
+      <InputWithLabel
+        id="search"
+        onInputChange={handleSearch}
+        value={searchTerm}
+        isFocused
+      >
+        <strong>Search</strong>
+      </InputWithLabel>
+
+      <button type="button" disabled={!searchTerm} onClick={handleSearchSubmit}>
+        Submit
+      </button>
+      <hr />
+
+      {/* Display stories or error/loading messages */}
+      {stories.isError && <p>Something went wrong ...</p>}
+      {stories.isLoading ? (
+        <h2>Loading...</h2>
+      ) : (
+        <List list={stories.data} onRemoveItem={handleRemoveStory} />
+      )}
+    </div>
+  );
+};
+
+export default App;
+```
+
+The main goal of this React code is to improve the way data is fetched from an API. Specifically, it aims to eliminate the inefficiency of fetching data every time a user types something into an input field. Instead, the new approach fetches data only when the user explicitly confirms their search query by clicking a "Submit" button.
+
+Here are the key parts of the implementation:
+
+### `useState` and `useReducer`
+
+1. Two pieces of state are managed here: `searchTerm` and `url`. `searchTerm` keeps track of the user's input, and `url` constructs the actual API endpoint based on that input.
+2. A `useReducer` is used for more complex state management related to the fetched stories. It keeps track of whether the data is loading, if there's an error, and the fetched data itself.
+
+### Custom Hook
+
+There's a custom hook called `useSemiPersistentState` to keep track of the `searchTerm` in local storage. This makes sure the user's last search term is remembered, even after refreshing the page.
+
+### `useEffect` and `useCallback`
+
+1. `handleFetchStories` is a function wrapped in `useCallback` to fetch the actual data. It's made more efficient by only rerunning when the `url` changes.
+2. There's a `useEffect` that calls `handleFetchStories` to actually fetch the data. This hook depends on `handleFetchStories`, so whenever `url` changes and `handleFetchStories` is re-created, the data is fetched again.
+
+### JSX Part
+
+The `InputWithLabel` component takes care of the search input field. It's followed by a submit button, which only becomes enabled if there's text in the search input. When clicked, `handleSearchSubmit` is invoked, updating the `url` and thus triggering a data fetch.
+
+### List Rendering and Error Handling
+
+Finally, there's a conditionally rendered section to display the stories or possible error/loading states.
+
+### Refactor Points
+
+1. Splitting Responsibilities: Initially, `searchTerm` had dual responsibilities—updating the input state and triggering the data fetch. Now, `url` has been introduced to handle the data fetching.
+2. Explicit Fetching: The data fetch only happens when the user clicks "Submit", making it an explicit action.
+
+In summary, the code efficiently manages user input and data fetching, all while providing a more user-friendly experience.

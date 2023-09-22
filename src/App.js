@@ -4,15 +4,15 @@ import InputWithLabel from "./components/InputWithLabel";
 import "./App.css";
 import storiesReducer from "./reducers/storiesReducer";
 
+// Define API endpoint constant
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
-// API endpoint where stories are drawn from.
-const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query='; 
-
-
-// Custom hook to manage semi-persistent state via local storage
+// Custom hook to manage state that persists in local storage
 const useSemiPersistentState = (key, initialState) => {
+  // Initialize state and try to load previous value from local storage
   const [value, setValue] = useState(localStorage.getItem(key) || initialState);
 
+  // Update local storage whenever the state changes
   useEffect(() => {
     localStorage.setItem(key, value);
   }, [value, key]);
@@ -21,24 +21,26 @@ const useSemiPersistentState = (key, initialState) => {
 };
 
 const App = () => {
-  // Use custom hook for managing search term with local storage
+  // Use custom hook to manage search term and keep it in local storage
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
 
-  // One useReducer hook to for unified state management to prevent impossible states
+  // Initialize URL state for API fetching
+  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
+
+  // Use useReducer to manage the stories' loading state, data, and error state
   const [stories, dispatchStories] = useReducer(storiesReducer, {
     data: [],
     isLoading: false,
     isError: false,
   });
 
-  // Fetch stories data from the Hacker News API
+  // useCallback ensures handleFetchStories only re-renders when URL changes
   const handleFetchStories = useCallback(() => {
-
-    if (!searchTerm) return;
-
+    // Initiate loading state
     dispatchStories({ type: "STORIES_FETCH_INIT" });
 
-    fetch(`${API_ENDPOINT}${searchTerm}`)
+    // Perform the fetch and handle the response or error
+    fetch(url)
       .then(response => response.json())
       .then((result) => {
         dispatchStories({
@@ -47,29 +49,33 @@ const App = () => {
         });
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
-  }, [searchTerm]);
+  }, [url]);
 
+  // Fetch stories whenever handleFetchStories changes (which happens when URL changes)
   useEffect(() => {
     handleFetchStories();
-  }, [handleFetchStories])
+  }, [handleFetchStories]);
 
-  // Function to remove a story
+  // Function to remove a story from the list
   const handleRemoveStory = (item) => {
     dispatchStories({ type: "REMOVE_STORY", payload: item });
   };
 
-  // Function to handle search term changes
+  // Function to update the search term in the state
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  
+  // Function to set the URL for fetching based on search term
+  const handleSearchSubmit = () => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
+  };
 
   return (
     <div>
       <h1>Hacker News Stories</h1>
 
-      {/* Search component */}
+      {/* Input field for search term */}
       <InputWithLabel
         id="search"
         onInputChange={handleSearch}
@@ -79,9 +85,16 @@ const App = () => {
         <strong>Search</strong>
       </InputWithLabel>
 
-      <hr />
+      {/* Submit button to initiate fetch */}
+      <button
+        type="button"
+        disabled={!searchTerm}
+        onClick={handleSearchSubmit}
+      >
+        Submit
+      </button>
 
-      {/* Display stories or error/loading messages */}
+      {/* Conditional rendering based on loading/error state */}
       {stories.isError && <p>Something went wrong ...</p>}
       {stories.isLoading ? (
         <h2>Loading...</h2>
