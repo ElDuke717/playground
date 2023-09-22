@@ -1444,14 +1444,10 @@ export default App;
 Here's the `SearchForm` component that was pulled out of the `App` component.
 
 ```javascript
-import React from 'react';
-import InputWithLabel from './InputWithLabel';
+import React from "react";
+import InputWithLabel from "./InputWithLabel";
 
-const SearchForm = ({
-    searchTerm,
-    onSearchInput,
-    onSearchSubmit,
-  }) => (
+const SearchForm = ({ searchTerm, onSearchInput, onSearchSubmit }) => (
   <form onSubmit={onSearchSubmit}>
     <InputWithLabel
       id="search"
@@ -1466,7 +1462,68 @@ const SearchForm = ({
       Submit
     </button>
   </form>
-  );
+);
 
 export default SearchForm;
 ```
+
+### Side-note: React's Synthetic Event System and `preventDefault`
+
+The list component example is taken from this tutorial about state management in React which uses React hooks. It demonstrates how to add an item to a list by using a form element with input and button elements. In this case, a preventDefault is called on the event when submitting the form to prevent a browser reload/refresh. You can try the code yourself with and without the "prevent default".
+
+Why is a form submit reloading the browser? All native HTML elements come with their internal native behavior. For instance, input elements store their internal state. That's why often React is used to take over for having controlled components by managing the state via React. The same applies for a form element which has a submit event that is invoked via a submit button element. In the past, it was desired to refresh the browser to flush all state and to submit the data to a backend. Nowadays, a library such as React, gives us more flexibility to deal with the submit event ourselves. In this case, we deal with it by updating the list in our component's state.
+
+### `preventDefault`
+
+#### What It's For:
+
+The `preventDefault` method is used to stop the default action of an HTML element from happening. For instance, clicking on a link navigates to a new page, and submitting a form refreshes the page. If you don't want these default behaviors to occur, you can use `preventDefault`.
+
+#### Why It's Used:
+
+It allows developers to interrupt the normal flow of an event and insert their own custom logic. This is particularly useful when:
+
+- You want to validate form input before submission
+- You want to dynamically load new content without page reload
+- You want to intercept click events on buttons or links for analytics or other behaviors
+
+---
+
+### React's Synthetic Event System
+
+#### What It Is:
+
+React's Synthetic Event system is a cross-browser wrapper around the browser's native event system. When you interact with a React element, the event you get in your callback is not a native event, but a Synthetic Event.
+
+#### Why It's Used:
+
+1. **Consistency**: Browsers have inconsistencies in how they implement events. React abstracts away these inconsistencies, making it easier to write cross-browser compatible code.
+
+2. **Performance**: React pools these Synthetic Events, which reduces the overhead of creating new event objects for each new event. When the event is done being processed, its properties are nullified, and it's returned to the pool for reuse.
+
+3. **Convenience**: Synthetic Events offer a consistent API and include extra information that may not be available in a native event, making the developer experience better.
+
+#### Why `preventDefault` Is Part of It:
+
+Since React's event system wraps the native event system, it includes equivalents for native functionalities like `preventDefault`. By calling `preventDefault` on a Synthetic Event, you're effectively preventing the default behavior on the native event that the Synthetic Event wraps.
+
+Here's an example:
+
+```javascript
+function MyForm() {
+  function handleSubmit(event) {
+    event.preventDefault(); // Prevent the default form submit
+    // Your custom logic here
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+In this example, when the form is submitted, `handleSubmit` is called. Inside that function, `event.preventDefault()` stops the form from being submitted in the traditional sense (i.e., no page reload), allowing you to handle it using JavaScript and React instead.
+
+Hopefully, this sheds light on `preventDefault` and React's Synthetic Event system. Is there anything else you'd like to know?
