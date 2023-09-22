@@ -36,20 +36,20 @@ const App = () => {
   });
 
   // useCallback ensures handleFetchStories only re-renders when URL changes
-  const handleFetchStories = useCallback(() => {
+  const handleFetchStories = useCallback(async () => {
     // Initiate loading state
     dispatchStories({ type: "STORIES_FETCH_INIT" });
 
+    const result = await axios.get(url);
     // Perform the fetch and handle the response or error
-    axios
-      .get(url)
-      .then((result) => {
-        dispatchStories({
-          type: "STORIES_FETCH_SUCCESS",
-          payload: result.data.hits,
-        });
-      })
-      .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
+    try {
+      dispatchStories({
+        type: "STORIES_FETCH_SUCCESS",
+        payload: result.data.hits,
+      });
+    } catch {
+      dispatchStories({ type: "STORIES_FETCH_FAILURE" });
+    }
   }, [url]);
 
   // Fetch stories whenever handleFetchStories changes (which happens when URL changes)
