@@ -1661,3 +1661,63 @@ export default Counter;
    - Functional components have less boilerplate and don't require `this`.
 
 By understanding how to transition from Class to functional components, you'll be well-equipped to work with both types effectively.
+
+## Imperative React
+
+### The Evolution of Refs in React
+
+First, the author lays out the historical progression of how refs have been handled in React:
+
+1. **String Refs** - This is a deprecated way of doing refs, and it's not recommended for use in modern applications.
+2. **Callback Refs** - This involves passing a function to the `ref` attribute. The function receives the underlying DOM element as its argument.
+3. **`createRef` Refs** - This is a more modern way but is specific to class components.
+4. **`useRef` Hook Refs** - This is exclusive for function components and is part of React's hooks API.
+
+The author aims to show how `createRef` and `useRef` are the more modern approaches to dealing with refs, but their usage depends on whether you're working with class or function components.
+
+### `createRef` vs `useRef`
+
+- `createRef` is used in class components. In your class component example, `this.inputRef = React.createRef();` would be the typical way to create a ref.
+- `useRef` is used in functional components. It accomplishes the same objective but in a function component setting, like `const inputRef = React.useRef();`.
+
+### Imperative Programming
+
+Both `createRef` and `useRef` are typically used for imperative programming. In React, we usually follow the declarative programming paradigm. However, sometimes we need to "break out" of this paradigm to do things like focusing on an input field. That's where refs come in handy.
+
+### Legacy Version vs Modern Version
+
+The author also hints at comparing a "legacy version" and a "modern version" of handling refs, likely contrasting class-based components (legacy) and function-based components (modern) equipped with hooks. Unfortunately, the code or further elaboration seems to be missing, but the idea would be to showcase how the same functionality can be achieved with the modern syntax that relies on function components and hooks.
+
+Hey Nick! Both code blocks are doing essentially the same thing—fetching Hacker News stories based on a search term, displaying them, and allowing them to be dismissed. However, there are some important differences in how they achieve this. Here's the lowdown:
+
+### Differences Between Class and Function Component Refs
+
+1. **State Management**: Uses React's class component state.
+2. **Side-Effects**: Utilizes lifecycle methods like `componentDidMount` and `componentDidUpdate` for side-effects.
+3. **Binding**: Needs to explicitly bind methods to `this` context in the constructor.
+4. **Refs**: Uses `React.createRef()` and class components for refs.
+
+### Second Block of Code: Function Components with Hooks
+
+1. **State Management**: Uses functional component state with the `useState` and `useReducer` hooks.
+2. **Side-Effects**: Uses the `useEffect` hook for side-effects.
+3. **Binding**: No need to bind `this` since function components don't have their own instance.
+4. **Refs**: Uses `useRef` and functional components for refs.
+
+### Comparison of Refs
+
+Both code blocks use refs to focus an input element, but they do it differently:
+
+- In the class-based version, `this.inputRef = React.createRef();` is used in the constructor and later `this.inputRef.current.focus();` in `componentDidMount`.
+- In the function-based version, `const inputRef = React.useRef();` is used, and later `inputRef.current.focus();` within a `useEffect`.
+
+#### Why Refs are Important Here
+
+The refs are used to automatically focus the search input when the component mounts. This improves the user experience by making the application easier to interact with.
+
+The refs are used as an example of imperative programming in React, where we "break out" of the declarative programming paradigm (telling React what to do but not explicitly how to do it) and into imperative programming (where we tell React what exactly to do) to focus on an input field. This is a common use case for refs, and it's important to understand how to use them effectively.
+
+## CSS in React
+
+### CSS in React
+

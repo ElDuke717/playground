@@ -17,7 +17,9 @@ const InputWithLabel = ({ id, children, value, onInputChange, isFocused }) => {
   return (
     <>
       {/* Label for the input field, children is used to pass the label text */}
-      <label htmlFor={id}>{children}</label>
+      <label htmlFor={id} className="label">
+        {children}{" "}
+      </label>
       &nbsp;
       {/* The input element itself */}
       <input
@@ -28,6 +30,7 @@ const InputWithLabel = ({ id, children, value, onInputChange, isFocused }) => {
         value={value}
         // onChange event calls the 'onInputChange' function passed as a prop
         onChange={onInputChange}
+        className="input"
       />
       {/* Displays the current search term */}
       <p>
