@@ -1721,3 +1721,114 @@ The refs are used as an example of imperative programming in React, where we "br
 
 ### CSS in React
 
+Absolutely, Nick. Here's a summary that you can add to your notes:
+
+---
+
+### CSS in React Summary
+
+#### Intro
+
+- Discusses the multiple ways to style a React application.
+- Points out that the best styling strategy is subjective and depends on the developer or team.
+
+#### Styling Approaches
+
+1. **Common CSS**: Uses `className` in React, similar to `class` in plain HTML.
+2. **CSS Modules**: A more advanced way to use CSS within CSS files, locally scoped.
+3. **Styled Components**: CSS-in-JS strategy; styles are written in JavaScript.
+4. **Inline Styles**: Styling can be written directly as JavaScript objects in JSX.
+5. **SVGs**: Explains how to use scalable vector graphics like logos and icons in React.
+
+#### Pre-configured in Create-React-App
+
+- Styling approaches and SVGs are pre-configured in create-react-app.
+- If you’re using custom build tools like Webpack, additional configuration might be needed.
+
+#### Practical Advice
+
+- Encourages building common UI components from scratch for learning.
+- However, popular UI libraries can be used for pre-built components.
+
+#### Additional Notes
+
+- You can pass `className` as a prop for more dynamic styling.
+- Suggests that in a real app, global styling should be considered, e.g., in `src/index.css`.
+- Touches on advanced features like CSS nesting but mentions these are optional.
+- Discusses the importance of choosing a suitable CSS naming convention, like BEM.
+
+---
+
+### Pros and Cons of each styling approach:
+
+Absolutely, Nick. Let's dive into the pros and cons of these styling methods, which might help you make an informed choice for your future projects.
+
+### 1. Common CSS
+
+#### Pros:
+
+- **Familiarity**: It's the most traditional way to style web elements, so most developers are familiar with it.
+- **Separation of Concerns**: Keeps your styling separate from your JSX and JavaScript, which can make your codebase easier to manage.
+
+#### Cons:
+
+- **Global Namespace**: Classes are global, which can lead to styling conflicts.
+- **No Dynamic Styles**: Difficult to make styles that react to your component's state or props without using additional JavaScript.
+
+### 2. CSS Modules
+
+#### Pros:
+
+- **Local Scope**: Styles are scoped to the component, not global, which helps prevent styling conflicts.
+- **Reusable Code**: Modules can be imported into different components.
+
+#### Cons:
+
+- **Complexity**: Adds an extra layer of complexity with importing/exporting modules.
+- **No Native Support**: Not a native feature of CSS or JavaScript; relies on build tools.
+
+### 3. Styled Components (CSS-in-JS)
+
+#### Pros:
+
+- **Dynamic Styling**: Easy to change styles dynamically based on props, state, or user input.
+- **Local Scoping**: No class name conflicts, which makes it easier to manage styles.
+
+#### Cons:
+
+- **Performance**: Can be slower because of the runtime style computation.
+- **Learning Curve**: Requires learning additional syntax and concepts, especially if you're new to JavaScript.
+
+### 4. Inline Styles
+
+#### Pros:
+
+- **Ease of Use**: Good for quick prototypes or small tweaks without affecting an entire CSS file.
+- **Dynamic Styling**: Easy to change styles dynamically using JavaScript.
+
+#### Cons:
+
+- **Limited Features**: No media queries, pseudo-classes, or other CSS features.
+- **Clutters JSX**: Makes your JSX code harder to read and manage, especially for larger components.
+
+### 5. SVGs in React
+
+#### Pros:
+
+- **Scalability**: SVGs maintain their quality at any size, ideal for responsive design.
+- **Easy Manipulation**: Can be modified dynamically using JSX props.
+
+#### Cons:
+
+- **Complexity**: Complex shapes and graphics can make the SVG XML code quite complicated.
+- **Performance**: May slow down the DOM if too many complex SVGs are used.
+
+---
+
+## CSS Modules in React
+
+Sure, Nick. The author is teaching how to use CSS Modules in a React application. Essentially, you rename your regular CSS file to have a `.module.css` extension and import it into your React component as a JavaScript object. This way, the styles are scoped to that specific component, reducing the risk of style conflicts. You can then apply these styles using a special `styles` object, which makes it easier to dynamically change styles.
+
+The author also talks about adding multiple classes to a single element using JavaScript template literals, and mentions that you can use CSS preprocessors like Sass with this approach.
+
+They also touch on naming conventions, suggesting that "pseudo BEM" naming is easier to work with in JavaScript compared to names with underscores or dashes. Finally, they mention that using CSS Modules will throw an error if a style isn't defined, which helps catch mistakes early on.

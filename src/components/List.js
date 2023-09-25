@@ -1,4 +1,5 @@
 import React from "react";
+import { ReactComponent as Check } from "../check.svg";
 
 // Item component renders individual story items
 // Takes in 'item' containing story details and 'onRemoveItem' function as props
@@ -21,8 +22,11 @@ const Item = ({ item, onRemoveItem }) => {
 
       {/* Dismiss button to remove the story from the list */}
       <span>
-        <button type="button" onClick={() => onRemoveItem(item)}>
-          Dismiss
+        <button type="button" 
+        onClick={() => onRemoveItem(item)}
+        className="button button_small"
+        >
+          <Check height="18px" width="18px" />
         </button>
       </span>
     </div>

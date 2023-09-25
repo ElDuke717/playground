@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useReducer, useCallback } from "react";
 import List from "./components/List";
-import InputWithLabel from "./components/InputWithLabel";
+
 import "./App.css";
 import storiesReducer from "./reducers/storiesReducer";
 import SearchForm from "./components/SearchForm";
 import axios from "axios";
+import { ReactComponent as Check } from "./check.svg";
 
 // Define API endpoint constant
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
@@ -63,10 +64,9 @@ const App = () => {
     dispatchStories({ type: "REMOVE_STORY", payload: item });
   };
 
-  const handleSearchInput = event => {
+  const handleSearchInput = (event) => {
     setSearchTerm(event.target.value);
   };
-
 
   // Function to set the URL for fetching based on search term
   const handleSearchSubmit = (event) => {
@@ -74,11 +74,10 @@ const App = () => {
     event.preventDefault();
   };
 
-  
   return (
     <div>
       <h1>Hacker News Stories</h1>
-      
+
       <SearchForm
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
