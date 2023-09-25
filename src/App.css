@@ -1,3 +1,76 @@
+:root {
+  /* Palette 1 Colors for the App*/
+
+  /* Primary */
+  --cyan-050: #e0fcff;
+  --cyan-100: #bef8fd;
+  --cyan-200: #87eaf2;
+  --cyan-300: #54d1db;
+  --cyan-400: #38bec9;
+  --cyan-500: #2cb1bc;
+  --cyan-600: #14919b;
+  --cyan-700: #0e7c86;
+  --cyan-800: #0a6c74;
+  --cyan-900: #044e54;
+
+  /* Neutrals */
+  --grey-050: #f0f4f8;
+  --grey-100: #d9e2ec;
+  --grey-200: #bcccdc;
+  --grey-300: #9fb3c8;
+  --grey-400: #829ab1;
+  --grey-500: #627d98;
+  --grey-600: #486581;
+  --grey-700: #334e68;
+  --grey-800: #243b53;
+  --grey-900: #102a43;
+
+  /* Supporting */
+  --indigo-050: #e0e8f9;
+  --indigo-100: #bed0f7;
+  --indigo-200: #98aeeb;
+  --indigo-300: #7b93db;
+  --indigo-400: #647acb;
+  --indigo-500: #4c63b6;
+  --indigo-600: #4055a8;
+  --indigo-700: #35469c;
+  --indigo-800: #2d3a8c;
+  --indigo-900: #19216c;
+
+  --pink-050: #ffe0f0;
+  --pink-100: #fab8d9;
+  --pink-200: #f191c1;
+  --pink-300: #e668a7;
+  --pink-400: #da4a91;
+  --pink-500: #c42d78;
+  --pink-600: #ad2167;
+  --pink-700: #9b1b5a;
+  --pink-800: #781244;
+  --pink-900: #5c0b33;
+
+  --red-050: #ffeeee;
+  --red-100: #facdcd;
+  --red-200: #f29b9b;
+  --red-300: #e66a6a;
+  --red-400: #d64545;
+  --red-500: #ba2525;
+  --red-600: #a61b1b;
+  --red-700: #911111;
+  --red-800: #780a0a;
+  --red-900: #610404;
+
+  --yellow-050: #fffaeb;
+  --yellow-100: #fcefc7;
+  --yellow-200: #f8e3a3;
+  --yellow-300: #f9da8b;
+  --yellow-400: #f7d070;
+  --yellow-500: #e9b949;
+  --yellow-600: #c99a2e;
+  --yellow-700: #a27c1a;
+  --yellow-800: #7c5e10;
+  --yellow-900: #513c06;
+}
+
 /* Reset some default browser styles */
 body,
 h1,
@@ -12,7 +85,7 @@ ul {
 /* Make a border around the entire page */
 body {
   margin: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--red-050);
   font-family: Arial, sans-serif;
 }
 
@@ -35,17 +108,17 @@ hr {
   width: 100%;
   margin: 20px 0;
   border: 0;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid var(--red-050);
 }
 
 .container {
   height: 100vw;
   padding: 20px;
 
-  background: #83a4d4; /* fallback for old browsers */
-  background: linear-gradient(to left, #b6fbff, #83a4d4);
+  background: var(--grey-300); /* fallback for old browsers */
+  background: linear-gradient(to left, var(--cyan-100), var(--grey-300));
 
-  color: #171212;
+  color: var(--grey-900);
 }
 
 .headlinePrimary {
@@ -91,10 +164,10 @@ List li:hover {
   height: 100vw;
   padding: 20px;
 
-  background: #83a4d4; /* fallback for old browsers */
-  background: linear-gradient(to left, #b6fbff, #83a4d4);
+  background: var(--grey-300); /* fallback for old browsers */
+  background: linear-gradient(to left, var(--cyan-100), var(--grey-300));
 
-  color: #171212;
+  color: var(--grey-900);
 }
 
 .headline-primary {
@@ -123,7 +196,7 @@ List li:hover {
 
 .button {
   background: transparent;
-  border: 1px solid #171212;
+  border: 1px solid var(--grey-900);
   padding: 5px;
   cursor: pointer;
 
@@ -131,8 +204,8 @@ List li:hover {
 }
 
 .button:hover {
-  background: #171212;
-  color: #ffffff;
+  background: var(--grey-900);
+  color: var(--grey-050);
 }
 
 .button_small {
@@ -150,16 +223,21 @@ List li:hover {
 }
 
 .label {
-  border-top: 1px solid #171212;
-  border-left: 1px solid #171212;
+  border-top: 1px solid var(--grey-900);
+  border-left: 1px solid var(--grey-900);
   padding-left: 5px;
   font-size: 24px;
 }
 
 .input {
   border: none;
-  border-bottom: 1px solid #171212;
+  border-bottom: 1px solid var(--grey-900);
   background-color: transparent;
 
   font-size: 24px;
+}
+
+.button:hover > svg > g {
+  fill: var(--grey-050);
+  stroke: var(--grey-050);
 }
