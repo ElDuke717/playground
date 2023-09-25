@@ -197,6 +197,7 @@ List li:hover {
 .button {
   background: transparent;
   border: 1px solid var(--grey-900);
+  border-radius: 2px;
   padding: 5px;
   cursor: pointer;
 
@@ -223,8 +224,7 @@ List li:hover {
 }
 
 .label {
-  border-top: 1px solid var(--grey-900);
-  border-left: 1px solid var(--grey-900);
+
   padding-left: 5px;
   font-size: 24px;
 }

@@ -1832,3 +1832,246 @@ Sure, Nick. The author is teaching how to use CSS Modules in a React application
 The author also talks about adding multiple classes to a single element using JavaScript template literals, and mentions that you can use CSS preprocessors like Sass with this approach.
 
 They also touch on naming conventions, suggesting that "pseudo BEM" naming is easier to work with in JavaScript compared to names with underscores or dashes. Finally, they mention that using CSS Modules will throw an error if a style isn't defined, which helps catch mistakes early on.
+
+Sure, Nick! Here's a summarized set of key points for your notes on avoiding first render computation in React apps:
+
+### Article Summary: Performance - Avoiding First Render Computation
+
+#### Key Concepts:
+
+1. **Performance in React**: Discusses the importance of performance optimization in maintaining large React applications. React is generally fast, but improvements can be made.
+
+2. **Don't Run on First Render**: Explains that React’s `useEffect` Hook runs both on the initial render and every re-render. The article suggests that running it on the first render might not always be necessary. A technique is shown using React’s `useRef` Hook to control when the side-effect runs, avoiding it during the first render.
+
+3. **Don't Re-render if Not Needed**: Briefly touches upon React’s re-rendering mechanism and indicates that unnecessary re-renders should be avoided for performance reasons.
+
+#### Detailed Points:
+
+- **Performance Optimization**: Makes efficient use of available resources to prevent the application from slowing down.
+- **Type Safety**: Recommends using typed languages like TypeScript for early bug detection.
+- **Testing**: Important for knowing what could break the application and provides more explicit feedback than typed programming.
+- **Project Structure**: Helps in organized management of assets, particularly useful when team members work in different domains.
+
+#### Extra Tips:
+
+- **Ref’s Mutable Current Property**: It’s utilized to keep a made-up state (without re-rendering the component) to manage the component’s lifecycle effectively.
+- **Logging Statement Trick**: Uses the `||` operator as a clever way to add logging statements to function components that don't have a function body.
+
+Hope this helps you understand the key aspects of performance optimization in React! If you have any more questions or need further clarification, feel free to ask.
+
+### Article Summary: Performance - Avoiding Heavy Computation in React
+
+#### Key Points:
+
+1. **UseCallback for Callback Handlers**: The `useCallback` Hook prevents the re-creation of callback handlers during re-renders, optimizing performance.
+
+2. **Memo for Component Re-rendering**: React's `memo` function can prevent unnecessary re-renders when the parent component re-renders.
+
+3. **Expensive Computations**: Performance-intensive computations in a component can be costly. `useMemo` can prevent these from re-running unnecessarily.
+
+4. **Function Outside Component**: For computations that don’t depend on component state, placing them outside the component avoids re-creating the function during each re-render.
+
+5. **Conditional Use of useMemo and useCallback**: These hooks should only be used when facing performance bottlenecks, as React is generally efficient with re-rendering.
+
+The article emphasizes that while React's rendering mechanism is generally efficient, tools like `memo`, `useCallback`, and `useMemo` can help in specific scenarios where performance issues arise.
+
+Certainly, Nick! These three hooks are all about optimizing your React components for performance. Let's dive into each one.
+
+### 1. `React.memo`
+
+`React.memo` is a higher-order component that memoizes the rendered output of the passed component, thereby preventing unnecessary renders.
+
+```jsx
+const MyComponent = React.memo(function MyComponent(props) {
+  // Your component code here
+});
+```
+
+#### Example:
+
+Imagine you have a `List` component rendering items. This list re-renders even when the parent component re-renders for some unrelated reason.
+
+```jsx
+function List({ items }) {
+  console.log("Rendering List");
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item.id}>{item.name}</li>
+      ))}
+    </ul>
+  );
+}
+
+export default React.memo(List);
+```
+
+By wrapping `List` in `React.memo`, you ensure that it only re-renders when its props change.
+
+---
+
+### 2. `useCallback`
+
+`useCallback` returns a memoized version of a callback function that only changes if one of the dependencies has changed. This is useful to prevent unnecessary renders for child components that depend on the callback as a prop.
+
+```jsx
+const memoizedCallback = useCallback(() => {
+  doSomething(a, b);
+}, [a, b]);
+```
+
+#### Example:
+
+```jsx
+function App() {
+  const [count, setCount] = useState(0);
+
+  const increment = useCallback(() => {
+    setCount((c) => c + 1);
+  }, []);
+
+  return (
+    <div>
+      <button onClick={increment}>Increment</button>
+      <SomeChildComponent memoizedIncrement={increment} />
+    </div>
+  );
+}
+```
+
+Here, the `increment` function will stay the same between re-renders unless its dependencies change, which means `SomeChildComponent` won't re-render unnecessarily.
+
+---
+
+### 3. `useMemo`
+
+`useMemo` returns a memoized value, meaning it will only recompute the memoized value when one of its dependencies has changed.
+
+```jsx
+const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
+```
+
+#### Example:
+
+```jsx
+function App() {
+  const [list, setList] = useState([1, 2, 3]);
+  const [query, setQuery] = useState("");
+
+  const filteredList = useMemo(() => {
+    return list.filter((item) => item.includes(query));
+  }, [list, query]);
+
+  return (
+    <div>
+      <input onChange={(e) => setQuery(e.target.value)} value={query} />
+      <List items={filteredList} />
+    </div>
+  );
+}
+```
+
+Here, `filteredList` is only recalculated when `list` or `query` changes, reducing the computational overhead.
+
+---
+
+So in summary:
+
+- `React.memo` is for memoizing components.
+- `useCallback` is for memoizing functions.
+- `useMemo` is for memoizing any computationally expensive calculations.
+
+Hope this helps you in optimizing your React apps, Nick! Let me know if you have any more questions.
+
+## What is memoization?
+
+Memoization is a specific form of caching that involves saving the outputs of expensive function calls and returning the cached result when the same inputs occur again. It's not just about saving data; it's about saving computed values to avoid redundant, expensive calculations.
+
+In the context of React:
+
+- **Memoizing a component (`React.memo`)**: React will remember the last rendered output of the wrapped component and use it if the props are the same as in the previous render. So, it won't re-run the render logic for that component, which could be expensive.
+
+- **Memoizing a function (`useCallback`)**: Here, the function reference remains constant if its dependencies haven't changed, helping to avoid unnecessary renders for child components that rely on this function as a prop.
+
+- **Memoizing a calculated value (`useMemo`)**: If you have a computationally expensive calculation in your component, you can use `useMemo` to remember the result based on the inputs (dependencies), and only recalculate if those inputs change.
+
+### Simple Example:
+
+Consider a simple function that calculates the factorial of a number:
+
+```javascript
+function factorial(n) {
+  if (n === 0) return 1;
+  return n * factorial(n - 1);
+}
+```
+
+Calculating `factorial(5)` would result in the function being called 6 times (`factorial(5)`, `factorial(4)`, ..., `factorial(0)`).
+
+Now, if you memoize this function, the first time you call `factorial(5)`, it'll do the calculation, but also save these results. The next time you call `factorial(5)`, it'll simply return the saved result, avoiding the need to recalculate it.
+
+This is especially beneficial in programming scenarios where you're likely to encounter the same inputs multiple times and the operation to compute the output is costly in terms of time or resources.
+
+So in essence, memoization is an optimization technique to speed up applications by storing the results of expensive function calls and reusing them when needed.
+
+## TypeScript in React
+
+Absolutely, Nick! Given your interest in front-end development and learning new technologies, TypeScript can be a valuable addition to your toolset. TypeScript is essentially a superset of JavaScript that adds static type definitions to the language. The primary advantage of this is that it enables robust type-checking during development, which can catch a lot of bugs and errors before runtime.
+
+### How TypeScript Works:
+
+1. **Type Annotations**: You can annotate variables, function parameters, and object shapes with types.
+
+   ```typescript
+   let username: string;
+   ```
+
+2. **Type Inference**: TypeScript can infer types based on the code's context. If you do `const x = 5;`, it knows that `x` is a number.
+
+3. **Interface and Type Aliases**: You can define complex types or interfaces that describe the shape of objects.
+
+   ```typescript
+   interface User {
+     username: string;
+     age: number;
+   }
+   ```
+
+4. **Generics**: These allow you to create reusable code components that work over a variety of types rather than a single one.
+
+5. **Compilation**: TypeScript code gets compiled into plain JavaScript using a tool called the TypeScript compiler (`tsc`). This ensures browser compatibility.
+
+### Using TypeScript in React:
+
+1. **Strongly Typed Props and State**: TypeScript allows you to specify types for your component’s props and state, making your components more robust and self-documented.
+
+   ```typescript
+   interface Props {
+     name: string;
+     age: number;
+   }
+
+   const MyComponent: React.FC<Props> = ({ name, age }) => {
+     return <div>{`${name} is ${age} years old`}</div>;
+   };
+   ```
+
+2. **Better Autocomplete and Intellisense**: With type checking, your IDE will offer better suggestions and catch errors on the fly.
+
+3. **Hooks**: You can also add types to your custom hooks. Given that you're into software engineering concepts, imagine making a custom hook to fetch data. You could define types for the request and response, making the hook more reliable and easier to understand.
+
+### Why It's a Good Idea:
+
+1. **Early Error Detection**: Catching errors at compile-time rather than runtime can save you from a lot of potential headaches.
+
+2. **Readability**: The type annotations serve as documentation, making the code easier to understand.
+
+3. **Safe Refactoring**: The type checker ensures that you're not accidentally breaking any parts of your app when making changes.
+
+4. **Better Development Experience**: Enhanced autocompletion, type checking, and better debugging can drastically improve productivity.
+
+5. **Community and Ecosystem**: More and more libraries and frameworks recommend or even require TypeScript, so it's becoming an industry standard of sorts.
+
+Overall, TypeScript complements React's component-based architecture really well and can make your development process smoother, more efficient, and less error-prone. It's an investment in the quality and maintainability of your code. Given your goal to become proficient in full-stack development and land a job, knowing TypeScript can certainly give you an edge.
+
+Feel free to dive deeper or ask more questions!
