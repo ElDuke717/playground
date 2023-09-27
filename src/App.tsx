@@ -2,7 +2,7 @@ import React, { useEffect, useState, useReducer, useCallback } from "react";
 import List from "./components/List.tsx";  // refactored to use TypeScript
 
 import "./App.css";
-import storiesReducer from "./reducers/storiesReducer";
+import storiesReducer from "./reducers/storiesReducer.tsx";
 import SearchForm from "./components/SearchForm";
 import axios from "axios";
 

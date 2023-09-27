@@ -1,5 +1,19 @@
 // Reducer function for story state management - this helps prevent impossible states
-const storiesReducer = (state, action) => {
+
+type StoriesState = {
+  data: Stories;
+  isLoading: boolean;
+  isError: boolean;
+};
+type StoriesAction = {
+  type: string;
+  payload: any;
+};
+
+const storiesReducer = (
+  state: StoriesState,
+  action: StoriesAction
+  ) => {
   switch (action.type) {
     case "STORIES_FETCH_INIT":
       return {
