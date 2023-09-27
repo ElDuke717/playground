@@ -23,7 +23,7 @@ type ItemProps = {
 // that expects props of type `ItemProps`.
 // Item component renders individual story items
 // Takes in 'item' containing story details and 'onRemoveItem' function as props
-const Item = ({ item, onRemoveItem }: ItemProps) => {
+export const Item = ({ item, onRemoveItem }: ItemProps) => {
   return (
     <div>
       {/* Display story title as a link */}

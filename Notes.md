@@ -2139,3 +2139,74 @@ export default List;
 5. **Importing SVG**: `ReactComponent as Check` is a special import syntax to let React know that `check.svg` should be treated as a React component. This isn't specific to TypeScript but is good to know.
 
 By using TypeScript, you're adding an extra layer of type safety to your components. This is invaluable for catching potential bugs early, improving readability, and making it easier to refactor code later on.
+
+## Testing in React
+
+Sure, Nick! That's quite a comprehensive text, but I'll break down the essentials for you.
+
+### Key Points:
+
+1. **Importance of Testing**: Testing is vital for verifying the quality and functionality of your code before it goes into production.
+
+2. **Testing Pyramid**: Consists of unit tests, integration tests, and end-to-end tests.
+
+   - **Unit Tests**: Fast and simple, used for individual functions or components.
+   - **Integration Tests**: Test how multiple units work together.
+   - **End-to-End Tests**: Simulate real-world scenarios like login flows.
+
+3. **Jest Framework**: Recommended for React testing due to its popularity and foundation for other libraries.
+
+4. **Test Suites and Test Cases**: In Jest, 'describe' blocks define test suites, and 'it' or 'test' blocks define individual test cases.
+
+5. **Using Utility Libraries**: You can use libraries like `react-test-renderer` for rendering React components in a testing environment.
+
+6. **Common Functions**: You can use setup and teardown functions to avoid duplicating code across tests.
+
+7. **Mocking**: Important for mimicking external functionalities like API calls via Axios.
+
+8. **Snapshot Testing**: Jest allows snapshot testing to identify changes in rendered components over time, complementing unit and integration tests.
+
+### Code Snippets:
+
+1. **Basic Test in Jest**
+
+   ```javascript
+   describe("My Component", () => {
+     it("should do something", () => {
+       expect(true).toBe(true);
+     });
+   });
+   ```
+
+2. **Installing Utility Libraries**
+
+   ```bash
+   npm install react-test-renderer --save-dev
+   ```
+
+3. **Mocking an Axios call in Jest**
+
+   ```javascript
+   jest.mock("axios", () => ({
+     get: jest.fn(() => Promise.resolve({ data: "some data" })),
+   }));
+   ```
+
+4. **Snapshot Test**
+
+   ```javascript
+   it("matches the snapshot", () => {
+     const tree = renderer.create(<MyComponent />).toJSON();
+     expect(tree).toMatchSnapshot();
+   });
+   ```
+
+5. **Testing a Click Event**
+   ```javascript
+   it("button click changes prop", () => {
+     const mock = jest.fn();
+     const wrapper = shallow(<Button onClick={mock}>Click me!</Button>);
+     wrapper.find("button").simulate("click");
+     expect(mock).toHaveBeenCalled();
+   });
+   ```
