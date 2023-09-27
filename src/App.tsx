@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useReducer, useCallback } from "react";
-import List from "./components/List";
+import List from "./components/List.tsx";  // refactored to use TypeScript
 
 import "./App.css";
 import storiesReducer from "./reducers/storiesReducer";
@@ -10,8 +10,11 @@ import { ReactComponent as Check } from "./check.svg";
 // Define API endpoint constant
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 
-// Custom hook to manage state that persists in local storage
-const useSemiPersistentState = (key, initialState) => {
+// Custom hook to manage state that persists in local storage, implemented with TypeScript types
+const useSemiPersistentState = (
+  key: string, 
+  initialState: string
+  ): [string, (newValue: string) => void] => {
   // Initialize state and try to load previous value from local storage
   const [value, setValue] = useState(localStorage.getItem(key) || initialState);
 
