@@ -1,7 +1,8 @@
 import React from "react";
 import { ReactComponent as Check } from "../check.svg";
 
-// Custom Story type to define the props passed into the Item component
+// Define the Story type with TypeScript. Each Story object will contain
+// these properties with their respective types.
 
 type Story = {
   objectID: string;
@@ -12,11 +13,14 @@ type Story = {
   points: number;
 };
 
+// Define the props that the Item component will receive.
+// It expects an `item` of type Story and an `onRemoveItem` function.
 type ItemProps = {
   item: Story;
   onRemoveItem: (item: Story) => void;
 };
-
+// TypeScript understands that `Item` is a React functional component
+// that expects props of type `ItemProps`.
 // Item component renders individual story items
 // Takes in 'item' containing story details and 'onRemoveItem' function as props
 const Item = ({ item, onRemoveItem }: ItemProps) => {
@@ -50,13 +54,17 @@ const Item = ({ item, onRemoveItem }: ItemProps) => {
   );
 };
 
+// Define the Stories type as an Array of Story.
 type Stories = Array<Story>;
 
+// Define the props that the List component will receive.
+// It expects a `list` of Stories and an `onRemoveItem` function.
 type ListProps = {
   list: Stories;
   onRemoveItem: (item: Story) => void;
 };
-
+// TypeScript understands that `List` is a React functional component
+// that expects props of type `ListProps`.
 // List component to render a list of stories
 // Takes in 'list' of stories and 'onRemoveItem' function as props
 const List = ({ list, onRemoveItem }: ListProps) => {

@@ -5,7 +5,16 @@ import "./App.css";
 import storiesReducer from "./reducers/storiesReducer";
 import SearchForm from "./components/SearchForm";
 import axios from "axios";
-import { ReactComponent as Check } from "./check.svg";
+
+
+type Story = {
+  objectID: string;
+  url: string;
+  title: string;
+  author: string;
+  num_comments: number;
+  points: number;
+};
 
 // Define API endpoint constant
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
@@ -63,8 +72,11 @@ const App = () => {
   }, [handleFetchStories]);
 
   // Function to remove a story from the list
-  const handleRemoveStory = (item) => {
-    dispatchStories({ type: "REMOVE_STORY", payload: item });
+  const handleRemoveStory = (item: Story) => {
+    dispatchStories({
+      type: 'REMOVE_STORY',
+      payload: item,
+    });
   };
 
   const handleSearchInput = (event) => {

@@ -2073,3 +2073,69 @@ Absolutely, Nick! Given your interest in front-end development and learning new 
 5. **Community and Ecosystem**: More and more libraries and frameworks recommend or even require TypeScript, so it's becoming an industry standard of sorts.
 
 Overall, TypeScript complements React's component-based architecture really well and can make your development process smoother, more efficient, and less error-prone. It's an investment in the quality and maintainability of your code. Given your goal to become proficient in full-stack development and land a job, knowing TypeScript can certainly give you an edge.
+
+### Examples of TypeScript in the codebase with explanations:
+
+Certainly, Nick! I'll add comments and notes to explain the TypeScript-related aspects of this code. This will help you understand how TypeScript is being used in this React component.
+
+```typescript
+// Importing React and an SVG file as a component
+import React from "react";
+import { ReactComponent as Check } from "../check.svg";
+
+// Define the Story type with TypeScript. Each Story object will contain
+// these properties with their respective types.
+type Story = {
+  objectID: string;
+  url: string;
+  title: string;
+  author: string;
+  num_comments: number;
+  points: number;
+};
+
+// Define the props that the Item component will receive.
+// It expects an `item` of type Story and an `onRemoveItem` function.
+type ItemProps = {
+  item: Story;
+  onRemoveItem: (item: Story) => void;
+};
+
+// TypeScript understands that `Item` is a React functional component
+// that expects props of type `ItemProps`.
+const Item = ({ item, onRemoveItem }: ItemProps) => {
+  // ... (existing code)
+};
+
+// Define the Stories type as an Array of Story.
+type Stories = Array<Story>;
+
+// Define the props that the List component will receive.
+// It expects a `list` of Stories and an `onRemoveItem` function.
+type ListProps = {
+  list: Stories;
+  onRemoveItem: (item: Story) => void;
+};
+
+// TypeScript understands that `List` is a React functional component
+// that expects props of type `ListProps`.
+const List = ({ list, onRemoveItem }: ListProps) => {
+  // ... (existing code)
+};
+
+export default List;
+```
+
+### Review Notes:
+
+1. **Type Declarations**: The `type` keyword is used to define custom types. For instance, `Story` and `ItemProps` are custom types declared to represent the shape of a story and the props for the `Item` component, respectively.
+
+2. **Function Argument Types**: Functions like `onRemoveItem` also have their argument types specified, ensuring that you pass a `Story` object when you call them.
+
+3. **Array Types**: `Array<Story>` specifies an array where each element is of type `Story`.
+
+4. **Functional Components with Props**: The functional components `Item` and `List` have their props strongly typed using TypeScript. This makes sure you can only pass in props that meet the criteria defined in `ItemProps` and `ListProps`.
+
+5. **Importing SVG**: `ReactComponent as Check` is a special import syntax to let React know that `check.svg` should be treated as a React component. This isn't specific to TypeScript but is good to know.
+
+By using TypeScript, you're adding an extra layer of type safety to your components. This is invaluable for catching potential bugs early, improving readability, and making it easier to refactor code later on.
