@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import App from './App';
+import App from './App.tsx';
 
 import Item from './components/List.tsx';
 
@@ -21,7 +21,7 @@ describe('Item', () => {
   };
 
   it('renders all properties', () => {
-    const component = renderer.create(<Item item={item} />);
+    const component = render.create(<Item item={item} />);
 
     expect(component.root.findByType('a').props.href).toEqual(
       'https://reactjs.org/'
